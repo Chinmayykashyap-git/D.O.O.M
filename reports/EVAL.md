@@ -111,11 +111,12 @@ The calibration curve and one-factor ablation below are reused from the Phase 2 
 
 Recall: 1.0000 (3 TP, 0 FN); precision: 1.0000 (0 FP). Three deterministic synthetic families held outside batch injection and calibration. This is a narrow open-set test, not generalization evidence for arbitrary attacks.
 
-| Holdout family | Detected | Classified unknown | Reconstruction status |
-|---|---:|---:|---|
-| LEDGER_FORK | True | True | UNRECOVERABLE |
-| WEIGHT_WITNESS_DRIFT | True | True | UNRECOVERABLE |
-| UNREGISTERED_EXTENSION_FIELD | True | True | UNRECOVERABLE |
+| Holdout family | Detected | Classified unknown | Nearest known type | Similarity | Novelty | Reconstruction status |
+|---|---:|---:|---|---:|---:|---|
+| LEDGER_FORK | True | True | DELETED | 0.0000 | 1.0000 | UNRECOVERABLE |
+| WEIGHT_WITNESS_DRIFT | True | True | SLOW_DRIFT | 0.5000 | 0.5000 | UNRECOVERABLE |
+| UNREGISTERED_EXTENSION_FIELD | True | True | DELETED | 0.0000 | 1.0000 | UNRECOVERABLE |
+A similarity of 0.0000 means no evidence-signature overlap; the displayed nearest category is only a deterministic zero-distance tie-break, not a semantic attribution.
 
 ## What we do poorly
 

@@ -2937,6 +2937,27 @@
           "EXPECTED_LEDGER_HASH_MISMATCH",
           "LEDGER_PREVIOUS_HASH_MISMATCH"
         ],
+        "unknown_analysis": {
+          "invariant_violations": [
+            {
+              "detector_id": "integrity_hash",
+              "evidence_code": "LEDGER_PREVIOUS_HASH_MISMATCH",
+              "field": "previous_hash",
+              "explanation": "The row's chain pointer differs from the independently anchored ledger."
+            },
+            {
+              "detector_id": "integrity_hash",
+              "evidence_code": "EXPECTED_LEDGER_HASH_MISMATCH",
+              "field": "ledger_hash",
+              "explanation": "The row's entry hash differs from the independently anchored ledger."
+            }
+          ],
+          "nearest_known_attack_type": "DELETED",
+          "nearest_similarity": 0.0,
+          "novelty_score": 1.0,
+          "nearest_match_meaningful": false,
+          "novelty_method": "Jaccard distance from fixed known-attack evidence signatures"
+        },
         "reconstruction_status": "UNRECOVERABLE",
         "explanation_present": true
       },
@@ -2947,6 +2968,21 @@
         "evidence_codes": [
           "EXPECTED_PAYLOAD_HASH_MISMATCH"
         ],
+        "unknown_analysis": {
+          "invariant_violations": [
+            {
+              "detector_id": "integrity_hash",
+              "evidence_code": "EXPECTED_PAYLOAD_HASH_MISMATCH",
+              "field": "payload_hash",
+              "explanation": "The manifest payload does not match the independently anchored ledger digest."
+            }
+          ],
+          "nearest_known_attack_type": "SLOW_DRIFT",
+          "nearest_similarity": 0.5,
+          "novelty_score": 0.5,
+          "nearest_match_meaningful": true,
+          "novelty_method": "Jaccard distance from fixed known-attack evidence signatures"
+        },
         "reconstruction_status": "UNRECOVERABLE",
         "explanation_present": true
       },
@@ -2957,6 +2993,21 @@
         "evidence_codes": [
           "UNRECOGNIZED_SCHEMA_FIELD"
         ],
+        "unknown_analysis": {
+          "invariant_violations": [
+            {
+              "detector_id": "schema_novelty",
+              "evidence_code": "UNRECOGNIZED_SCHEMA_FIELD",
+              "field": "schema",
+              "explanation": "Record contains fields absent from the registered batch schema."
+            }
+          ],
+          "nearest_known_attack_type": "DELETED",
+          "nearest_similarity": 0.0,
+          "novelty_score": 1.0,
+          "nearest_match_meaningful": false,
+          "novelty_method": "Jaccard distance from fixed known-attack evidence signatures"
+        },
         "reconstruction_status": "UNRECOVERABLE",
         "explanation_present": true
       }

@@ -21,7 +21,9 @@ from doom.schema import (
 TYPE_FOR_EVIDENCE = {
     "DUPLICATE_SHIPMENT": "DUPLICATE_EXACT",
     "DUPLICATE_NEAR_MATCH": "DUPLICATE_NEAR",
-    "EXPECTED_PAYLOAD_HASH_MISMATCH": "MODIFIED_VALUE",
+    "EXPECTED_PAYLOAD_HASH_MISMATCH": "UNKNOWN ANOMALY",
+    "LEDGER_PREVIOUS_HASH_MISMATCH": "UNKNOWN ANOMALY",
+    "EXPECTED_LEDGER_HASH_MISMATCH": "UNKNOWN ANOMALY",
     "DECLARED_VALUE_FORMULA": "MODIFIED_VALUE",
     "CUSTOMS_VALUE_MISMATCH": "MODIFIED_VALUE",
     "OWNER_REGISTRY_MISMATCH": "RELATIONAL_ORPHAN",
@@ -39,6 +41,24 @@ TYPE_FOR_EVIDENCE = {
     "LEDGER_SEQUENCE_GAP": "DELETED",
     "UNREGISTERED_RECORD_ID": "FABRICATED",
     "UNRECOGNIZED_SCHEMA_FIELD": "UNKNOWN ANOMALY",
+}
+
+KNOWN_EVIDENCE_SIGNATURES = {
+    "MODIFIED_VALUE": {
+        "EXPECTED_PAYLOAD_HASH_MISMATCH", "DECLARED_VALUE_FORMULA",
+        "CUSTOMS_VALUE_MISMATCH",
+    },
+    "DELETED": {"EXPECTED_RECORD_ABSENT", "LEDGER_SEQUENCE_GAP"},
+    "DUPLICATE_EXACT": {"DUPLICATE_SHIPMENT"},
+    "DUPLICATE_NEAR": {"DUPLICATE_NEAR_MATCH"},
+    "FABRICATED": {"UNREGISTERED_RECORD_ID", "UNREGISTERED_CONTAINER"},
+    "TIMESTAMP_SHIFT": {"EVENT_OUTSIDE_SHIPMENT_WINDOW", "SCHEDULE_TIME_MISMATCH"},
+    "TELEPORTATION": {"LOCATION_OFF_ROUTE", "LOCATION_EVENT_MISMATCH"},
+    "PORT_SKIP": {"ROUTE_SCHEDULE_MISMATCH", "PORT_LOG_SEQUENCE_MISMATCH"},
+    "NEGATIVE_TRANSIT": {"NON_MONOTONIC_SHIPMENT_TIME"},
+    "RELATIONAL_ORPHAN": {"OWNER_REGISTRY_MISMATCH", "CONTAINER_OWNER_MISMATCH"},
+    "VESSEL_MISMATCH": {"VESSEL_SCHEDULE_MISMATCH", "UNSCHEDULED_VESSEL"},
+    "SLOW_DRIFT": {"EXPECTED_PAYLOAD_HASH_MISMATCH", "CUSTOMS_VALUE_MISMATCH"},
 }
 
 
@@ -169,6 +189,20 @@ class ManifestDetector:
                             record_id, "integrity_hash", "LEDGER_HASH_CHAIN_BREAK",
                             "ledger_hash", observed_chain, row.get("ledger_hash"),
                             0.98, "The sequence-linked entry hash does not verify.",
+                        )
+                    if str(row.get("previous_hash", "")) != str(ledger["previous_hash"]):
+                        add(
+                            record_id, "integrity_hash", "LEDGER_PREVIOUS_HASH_MISMATCH",
+                            "previous_hash", ledger["previous_hash"],
+                            row.get("previous_hash"), 0.98,
+                            "The row's chain pointer differs from the independently anchored ledger.",
+                        )
+                    if str(row.get("ledger_hash", "")) != str(ledger["ledger_hash"]):
+                        add(
+                            record_id, "integrity_hash", "EXPECTED_LEDGER_HASH_MISMATCH",
+                            "ledger_hash", ledger["ledger_hash"], row.get("ledger_hash"),
+                            0.98,
+                            "The row's entry hash differs from the independently anchored ledger.",
                         )
 
         frame_ids = set(frame["record_id"].astype(str))
@@ -399,7 +433,8 @@ class ManifestDetector:
 
         unexpected = sorted(set(frame.columns) - set(MANIFEST_COLUMNS))
         if unexpected:
-            for record_id in frame["record_id"].astype(str):
+            populated_rows = frame[unexpected].notna().any(axis=1)
+            for record_id in frame.loc[populated_rows, "record_id"].astype(str):
                 add(
                     record_id, "schema_novelty", "UNRECOGNIZED_SCHEMA_FIELD",
                     "schema", sorted(MANIFEST_COLUMNS), unexpected, 0.91,
@@ -526,6 +561,10 @@ class ManifestDetector:
             incidents.append({
                 "record_id": record_id,
                 "tampering_type": tampering_type,
+                "unknown_analysis": (
+                    _unknown_analysis(evidence)
+                    if tampering_type == "UNKNOWN ANOMALY" else None
+                ),
                 "type_probabilities": probabilities,
                 "risk_score": risk,
                 "confidence": round(best, 2),
@@ -538,6 +577,37 @@ class ManifestDetector:
                 ),
             })
         return sorted(incidents, key=lambda item: (-item["risk_score"], item["record_id"]))
+
+
+def _unknown_analysis(evidence: list[dict[str, Any]]) -> dict[str, Any]:
+    observed_codes = {
+        str(item["evidence_code"]) for item in evidence
+    }
+    similarities = {
+        attack: len(observed_codes & signature) / len(observed_codes | signature)
+        if observed_codes | signature else 0.0
+        for attack, signature in KNOWN_EVIDENCE_SIGNATURES.items()
+    }
+    nearest = sorted(
+        similarities,
+        key=lambda attack: (-similarities[attack], attack),
+    )[0]
+    return {
+        "invariant_violations": [
+            {
+                "detector_id": str(item["detector_id"]),
+                "evidence_code": str(item["evidence_code"]),
+                "field": str(item["field"]),
+                "explanation": str(item["explanation"]),
+            }
+            for item in evidence
+        ],
+        "nearest_known_attack_type": nearest,
+        "nearest_similarity": round(similarities[nearest], 4),
+        "novelty_score": round(1.0 - similarities[nearest], 4),
+        "nearest_match_meaningful": similarities[nearest] > 0.0,
+        "novelty_method": "Jaccard distance from fixed known-attack evidence signatures",
+    }
 
 
 def _safe(value: Any) -> Any:

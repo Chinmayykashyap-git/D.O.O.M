@@ -79,7 +79,10 @@ def route_distance_nm(route: list[str] | tuple[str, ...]) -> float:
 
 def canonical_payload(row: dict[str, Any]) -> str:
     return json.dumps(
-        {key: row[key] for key in sorted(row) if key not in HASH_COLUMNS},
+        {
+            key: row[key] for key in sorted(row)
+            if key in MANIFEST_COLUMNS and key not in HASH_COLUMNS
+        },
         sort_keys=True,
         separators=(",", ":"),
         ensure_ascii=True,

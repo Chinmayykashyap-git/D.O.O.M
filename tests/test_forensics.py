@@ -15,6 +15,7 @@ from doom.calibration import apply_calibration, load_calibrator
 from doom.corruption import ATTACK_TYPES, inject_attacks
 from doom.api import create_app
 from doom.detectors import ManifestDetector
+from doom.holdout_eval import evaluate_holdout
 from doom.generator import (
     generate_dataset, make_control_ledger, output_hashes,
 )
@@ -23,6 +24,7 @@ from doom.oracle import OracleStore
 from doom.reconstruction import reconstruct_manifest
 from doom.store import EvidenceStore
 from doom.streaming import StreamingService
+from holdout_attacks import HOLDOUT_ATTACKS, inject_holdout_attacks
 
 
 def generated(count: int = 300, seed: int = 1907):
@@ -274,7 +276,48 @@ def test_unknown_stream_schema_attack_is_not_a_batch_training_import(tmp_path):
     assert event["status"] == "ANOMALY"
     assert event["incident"]["tampering_type"] == "UNKNOWN ANOMALY"
     assert event["incident"]["evidence"][0]["evidence_code"] == "UNRECOGNIZED_SCHEMA_FIELD"
+    assert event["incident"]["unknown_analysis"]["invariant_violations"]
+    assert 0 <= event["incident"]["unknown_analysis"]["novelty_score"] <= 1
+    assert event["incident"]["unknown_analysis"]["nearest_known_attack_type"] in ATTACK_TYPES
     assert not any(item["record_id"] == row["record_id"] for item in batch_incidents)
+
+
+def test_holdout_families_are_isolated_and_explain_novelty():
+    root = Path(__file__).resolve().parents[1]
+    assert set(HOLDOUT_ATTACKS).isdisjoint(ATTACK_TYPES)
+    clean, _ = generate_dataset(120, 9181)
+    original = clean.copy(deep=True)
+    first, first_truth = inject_holdout_attacks(clean, 9182)
+    second, second_truth = inject_holdout_attacks(clean, 9182)
+    pd.testing.assert_frame_equal(clean, original)
+    pd.testing.assert_frame_equal(first, second)
+    assert first_truth == second_truth
+
+    for source in (root / "doom").glob("*.py"):
+        tree = ast.parse(source.read_text(encoding="utf-8"))
+        imported = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imported.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imported.add(node.module)
+        if any(name == "holdout_attacks" or name.startswith("holdout_attacks.") for name in imported):
+            assert source.name == "holdout_eval.py"
+    calibration_source = (root / "doom" / "calibration.py").read_text(encoding="utf-8")
+    assert "holdout_attacks" not in calibration_source
+    report = evaluate_holdout(record_count=120, seed=9183)
+    assert report["attack_families"] == list(HOLDOUT_ATTACKS)
+    assert report["true_positive"] + report["false_negative"] == len(HOLDOUT_ATTACKS)
+    for result in report["per_attack"].values():
+        assert result["classified_unknown"]
+        analysis = result["unknown_analysis"]
+        assert analysis["invariant_violations"]
+        assert analysis["nearest_known_attack_type"] in ATTACK_TYPES
+        assert 0 <= analysis["nearest_similarity"] <= 1
+        assert 0 <= analysis["novelty_score"] <= 1
+        assert analysis["nearest_match_meaningful"] == (
+            analysis["nearest_similarity"] > 0
+        )
 
 
 def test_detector_import_graph_cannot_access_injection_or_holdout_truth():
@@ -359,6 +402,11 @@ def test_multiseed_metrics_meet_regression_targets_without_seed_leakage():
         holdout["attack_families"]
     )
     assert all(result["classified_unknown"] for result in holdout["per_attack"].values())
+    assert all(
+        result["unknown_analysis"]["invariant_violations"]
+        and result["unknown_analysis"]["novelty_method"]
+        for result in holdout["per_attack"].values()
+    )
     assert (root / "reports" / "EVAL.md").exists()
     assert (root / "TARGETS.md").exists()
 

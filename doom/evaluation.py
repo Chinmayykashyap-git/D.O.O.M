@@ -12,7 +12,6 @@ from doom.calibration import load_calibrator
 from doom.corruption import ATTACK_TYPES, inject_attacks
 from doom.detectors import ManifestDetector
 from doom.generator import generate_dataset, make_control_ledger
-from doom.holdout_eval import evaluate_holdout
 from doom.metrics import evaluate_detection
 from doom.reconstruction import reconstruct_manifest
 
@@ -283,14 +282,23 @@ def _make_eval_markdown(metrics: dict[str, Any]) -> str:
         f"{holdout['false_negative']} FN); precision: {holdout['precision']:.4f} "
         f"({holdout['false_positive']} FP). {holdout['evaluation_scope']}",
         "",
-        "| Holdout family | Detected | Classified unknown | Reconstruction status |",
-        "|---|---:|---:|---|",
+        "| Holdout family | Detected | Classified unknown | Nearest known type | Similarity | Novelty | Reconstruction status |",
+        "|---|---:|---:|---|---:|---:|---|",
     ])
     for family, values in holdout["per_attack"].items():
+        analysis = values.get("unknown_analysis")
+        nearest = analysis["nearest_known_attack_type"] if analysis else "n/a"
+        similarity = f"{analysis['nearest_similarity']:.4f}" if analysis else "n/a"
+        novelty = f"{analysis['novelty_score']:.4f}" if analysis else "n/a"
         lines.append(
             f"| {family} | {values['detected']} | {values['classified_unknown']} "
+            f"| {nearest} | {similarity} | {novelty} "
             f"| {values['reconstruction_status']} |"
         )
+    lines.append(
+        "A similarity of 0.0000 means no evidence-signature overlap; the displayed nearest category is "
+        "only a deterministic zero-distance tie-break, not a semantic attribution."
+    )
     lines.extend([
         "",
         "## What we do poorly",
@@ -366,7 +374,21 @@ def run_evaluation(
     by_seed = {
         str(seed): evaluate_seed(record_count, seed) for seed in seeds
     }
-    holdout = evaluate_holdout()
+    holdout_path = ROOT / "reports" / "holdout.json"
+    if not holdout_path.exists():
+        raise FileNotFoundError(
+            f"Required holdout artifact missing: {holdout_path}; run the isolated holdout evaluator first."
+        )
+    holdout = json.loads(holdout_path.read_text(encoding="utf-8"))
+    if holdout.get("seed") in seeds:
+        raise ValueError("known and holdout evaluations must use disjoint seeds")
+    if not set(holdout.get("attack_families", ())).isdisjoint(ATTACK_TYPES):
+        raise ValueError("holdout families must remain outside the known attack catalog")
+    if any(
+        not values.get("unknown_analysis")
+        for values in holdout.get("per_attack", {}).values()
+    ):
+        raise ValueError("holdout report is stale or missing unknown-anomaly analysis")
     ablation_path = ROOT / "reports" / "ablation.json"
     ablation = json.loads(ablation_path.read_text(encoding="utf-8"))
     report = {
