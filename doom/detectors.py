@@ -39,7 +39,6 @@ TYPE_FOR_EVIDENCE = {
     "LEDGER_SEQUENCE_GAP": "DELETED",
     "UNREGISTERED_RECORD_ID": "FABRICATED",
     "UNRECOGNIZED_SCHEMA_FIELD": "UNKNOWN ANOMALY",
-    "ROBUST_BEHAVIOR_OUTLIER": "UNKNOWN ANOMALY",
 }
 
 
@@ -286,6 +285,7 @@ class ManifestDetector:
                             "MODIFIED_VALUE",
                         )
 
+            distance = route_distance_nm(route) if len(route) >= 2 else 0.0
             if enabled is None or "route_validation" in enabled:
                 current_location = str(row.get("current_location", ""))
                 if route and current_location not in route:
@@ -295,7 +295,6 @@ class ManifestDetector:
                         "Observed location is not an endpoint or waypoint on the declared route.",
                         "TELEPORTATION",
                     )
-                distance = route_distance_nm(route) if len(route) >= 2 else 0.0
                 observed_distance = float(row.get("route_distance_nm", 0) or 0)
                 if distance and abs(distance - observed_distance) > max(5.0, distance * 0.03):
                     add(

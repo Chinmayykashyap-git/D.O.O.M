@@ -402,5 +402,144 @@
     "RELATIONAL_ORPHAN",
     "VESSEL_MISMATCH",
     "SLOW_DRIFT"
+  ],
+  "calibration": {
+    "by_seed": {
+      "1501": {
+        "record_support": 1221,
+        "attack_support": 84,
+        "detection_brier_raw": 9.9e-05,
+        "detection_brier_calibrated": 0.0,
+        "detection_ece_raw": 0.002351,
+        "detection_ece_calibrated": 9.3e-05,
+        "detection_reliability_raw": [
+          {
+            "count": 1137,
+            "mean_predicted_probability": 0.0,
+            "observed_frequency": 0.0
+          },
+          {
+            "count": 84,
+            "mean_predicted_probability": 0.965833,
+            "observed_frequency": 1.0
+          }
+        ],
+        "detection_reliability_calibrated": [
+          {
+            "count": 1137,
+            "mean_predicted_probability": 9.9e-05,
+            "observed_frequency": 0.0
+          },
+          {
+            "count": 84,
+            "mean_predicted_probability": 0.999997,
+            "observed_frequency": 1.0
+          }
+        ],
+        "type_accuracy": 1.0,
+        "type_log_loss": 0.006865,
+        "type_brier": 6.1e-05,
+        "type_top_label_ece": 0.006839,
+        "type_reliability": [
+          {
+            "count": 84,
+            "mean_predicted_probability": 0.993161,
+            "observed_frequency": 1.0
+          }
+        ]
+      },
+      "1907": {
+        "record_support": 1221,
+        "attack_support": 84,
+        "detection_brier_raw": 9.9e-05,
+        "detection_brier_calibrated": 0.0,
+        "detection_ece_raw": 0.002351,
+        "detection_ece_calibrated": 9.3e-05,
+        "detection_reliability_raw": [
+          {
+            "count": 1137,
+            "mean_predicted_probability": 0.0,
+            "observed_frequency": 0.0
+          },
+          {
+            "count": 84,
+            "mean_predicted_probability": 0.965833,
+            "observed_frequency": 1.0
+          }
+        ],
+        "detection_reliability_calibrated": [
+          {
+            "count": 1137,
+            "mean_predicted_probability": 9.9e-05,
+            "observed_frequency": 0.0
+          },
+          {
+            "count": 84,
+            "mean_predicted_probability": 0.999997,
+            "observed_frequency": 1.0
+          }
+        ],
+        "type_accuracy": 1.0,
+        "type_log_loss": 0.006891,
+        "type_brier": 6.1e-05,
+        "type_top_label_ece": 0.006864,
+        "type_reliability": [
+          {
+            "count": 84,
+            "mean_predicted_probability": 0.993136,
+            "observed_frequency": 1.0
+          }
+        ]
+      }
+    },
+    "detection_brier_raw": 9.9e-05,
+    "detection_brier_calibrated": 0.0,
+    "detection_ece_raw": 0.002351,
+    "detection_ece_calibrated": 9.3e-05,
+    "detection_reliability_raw": [
+      {
+        "count": 2274,
+        "mean_predicted_probability": 0.0,
+        "observed_frequency": 0.0
+      },
+      {
+        "count": 168,
+        "mean_predicted_probability": 0.965833,
+        "observed_frequency": 1.0
+      }
+    ],
+    "detection_reliability_calibrated": [
+      {
+        "count": 2274,
+        "mean_predicted_probability": 9.9e-05,
+        "observed_frequency": 0.0
+      },
+      {
+        "count": 168,
+        "mean_predicted_probability": 0.999997,
+        "observed_frequency": 1.0
+      }
+    ],
+    "type_accuracy": 1.0,
+    "type_log_loss": 0.006878,
+    "type_brier": 6.1e-05,
+    "type_top_label_ece": 0.006851,
+    "type_reliability": [
+      {
+        "count": 168,
+        "mean_predicted_probability": 0.993149,
+        "observed_frequency": 1.0
+      }
+    ]
+  },
+  "calibration_training_seeds": [
+    113,
+    401,
+    809,
+    1301
+  ],
+  "calibration_evaluation_seeds": [
+    1501,
+    1907
   ]
 }

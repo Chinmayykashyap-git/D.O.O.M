@@ -35,6 +35,12 @@ Select a batch size (at least 30 records):
 python -m doom.demo --records 5000 --no-server
 ```
 
+Regenerate the fixed-seed calibration and detector-ablation reports:
+
+```powershell
+python -m doom.calibration
+```
+
 ## Development
 
 Run the API after generating a batch:
@@ -65,7 +71,7 @@ npm run build
 
 The batch detector receives only a corrupted manifest, an ID/sequence/hash control ledger, and generated owner, container, vessel, port-event, and customs witnesses. It does **not** receive the clean manifest or hidden injection log. Attack generation and oracle persistence are isolated in `doom.corruption` and `doom.oracle`; the log lives in a separate `data/oracle/attack_truth.sqlite3` database and is consumed only by `doom.metrics.evaluate_detection`. The evidence database has no injection-truth table, and no API or UI exposes the oracle. Missing IDs are detected through the control ledger; absent payloads are marked `UNRECOVERABLE`, never fabricated.
 
-Detectors combine exact/near duplicate analysis, control-ledger payload and sequence validation, registered owner/container/vessel checks, route and event-history consistency, time feasibility, customs value checks, and open-set schema novelty. Standard evidence includes detector, records, field, expected/observed values, contribution, and explanation; incidents include type hypotheses and a counterfactual. Reconstruction emits a materialized manifest and one explicit decision for every present row and every ledger-confirmed missing ID: `ORIGINAL`, `REPAIRED`, `REMOVED`, or `UNRECOVERABLE`. A repair includes the witness, changed field, prior value, recovered value, and explanation.
+Detectors combine exact/near duplicate analysis, control-ledger payload and sequence validation, registered owner/container/vessel checks, route and event-history consistency, time feasibility, customs value checks, and open-set schema novelty. Standard evidence includes detector, records, field, expected/observed values, contribution, and explanation; incidents include raw hypotheses and a counterfactual. The demo also attaches seed-separated calibrated detection and attack-type estimates from `reports/calibration.json`; their measured reliability applies only to this synthetic generator and seeds. Reconstruction emits a materialized manifest and one explicit decision for every present row and every ledger-confirmed missing ID: `ORIGINAL`, `REPAIRED`, `REMOVED`, or `UNRECOVERABLE`. A repair includes the witness, changed field, prior value, recovered value, and explanation.
 
 ## Product modules
 

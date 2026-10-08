@@ -39,13 +39,15 @@ The `policy_epoch` and `routing_signature` fields appear only in the unknown-sch
 | `control_ledger.csv` | Expected IDs, sequence positions, payload digests, and chained hashes. | Detector input; contains neither expected source field values nor attack labels. |
 | `witnesses/*.csv` | Owner/container registry, vessel schedule, movement events, port logs, and customs records. | Synthetic detector/reconstruction witnesses, not external authenticated evidence. |
 | `oracle/attack_truth.sqlite3` | Attack labels and original values for evaluation. | Evaluator only; separate database, never detector/API/UI input. |
+| `../reports/calibration.json` | Seed-separated standardized logistic calibration models and held-out reliability/type metrics. | Trained on fixed synthetic training seeds; labels are used only by offline training/evaluation, never by detector inference. |
+| `../reports/ablation.json` | One-factor detector ablation on the fixed synthetic seed. | Descriptive synthetic diagnostic; not a causal or real-world benchmark. |
 | `evaluation.json` | Human-readable copy of the computed run metrics. | Synthetic evaluation result. |
 | `../reports/metrics.json` | Machine-readable measured evaluation report. | Synthetic evaluation result. |
 | `doom.sqlite3` | Observed/reconstructed records, incidents, decisions, stream events, and metrics. | Operator store; contains no ground truth. |
 
 ## Incident
 
-`record_id`, `tampering_type`, `risk_score` (0–100), evidence strength, `type_probabilities` (un-calibrated hypotheses until Phase 2 calibration), standard detector evidence (detector, record IDs, field, expected/observed, score contribution, explanation), detectors, related records, counterfactual, and `record_missing`.
+`record_id`, `tampering_type`, `risk_score` (0–100), `confidence` (raw strongest-rule score), `detection_probability` (seed-separated calibrated synthetic estimate), `type_probabilities` (raw uncalibrated rule hypotheses), `type_probabilities_calibrated` (held-out-evaluated synthetic model outputs), `type_prediction_calibrated`, standard detector evidence (detector, record IDs, field, expected/observed, score contribution, explanation), detectors, related records, counterfactual, and `record_missing`.
 
 Batch labels: `MODIFIED_VALUE`, `DELETED`, `DUPLICATE_EXACT`, `DUPLICATE_NEAR`, `FABRICATED`, `TIMESTAMP_SHIFT`, `TELEPORTATION`, `PORT_SKIP`, `NEGATIVE_TRANSIT`, `RELATIONAL_ORPHAN`, `VESSEL_MISMATCH`, `SLOW_DRIFT`. Open-set findings use `UNKNOWN ANOMALY`.
 
@@ -55,4 +57,4 @@ Batch labels: `MODIFIED_VALUE`, `DELETED`, `DUPLICATE_EXACT`, `DUPLICATE_NEAR`, 
 
 ## Evaluation
 
-Record-level true/false positives and negatives, precision, recall, F1, and detected-record type accuracy are computed against the isolated injection log for a synthetic run. They are not validated production performance estimates.
+Record-level true/false positives and negatives, precision, recall, F1, type confusion, reconstruction status/field accuracy, detector ablation, and held-out synthetic calibration reliability are computed against the isolated injection oracle. They are not validated production performance estimates.

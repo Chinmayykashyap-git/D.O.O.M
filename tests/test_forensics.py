@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
+from doom.calibration import apply_calibration, load_calibrator
 from doom.corruption import ATTACK_TYPES, inject_attacks
 from doom.api import create_app
 from doom.detectors import ManifestDetector
@@ -260,9 +261,50 @@ def test_detector_import_graph_cannot_access_injection_or_holdout_truth():
     assert "hidden_injection_log" not in source
 
 
+def test_calibration_artifact_uses_disjoint_seeds_and_returns_bounded_probabilities():
+    root = Path(__file__).resolve().parents[1]
+    artifact = load_calibrator(root / "reports" / "calibration.json")
+    assert artifact is not None
+    study = artifact["study"]
+    assert set(study["training_seeds"]).isdisjoint(study["evaluation_seeds"])
+    assert study["evaluation"]["detection_brier_calibrated"] <= (
+        study["evaluation"]["detection_brier_raw"]
+    )
+    assert study["evaluation"]["type_accuracy"] == 1.0
+    assert study["evaluation"]["detection_reliability_calibrated"]
+    assert study["evaluation"]["type_reliability"]
+
+    clean, witnesses, observed, oracle, ledger = generated(480, 2222)
+    incidents = detect(clean, witnesses, observed, ledger)
+    calibrated = apply_calibration(incidents, artifact)
+    truth = {entry["record_id"]: entry["tampering_type"] for entry in oracle}
+    predicted = {entry["record_id"]: entry for entry in calibrated}
+    assert set(truth) <= set(predicted)
+    for record_id, incident in predicted.items():
+        assert 0 <= incident["detection_probability"] <= 1
+        probabilities = incident["type_probabilities_calibrated"]
+        assert set(probabilities) == set(ATTACK_TYPES)
+        assert abs(sum(probabilities.values()) - 1) < 1e-5
+        if record_id in truth:
+            assert incident["type_prediction_calibrated"] == truth[record_id]
+
+
+def test_ablation_report_shows_control_ledger_contribution():
+    root = Path(__file__).resolve().parents[1]
+    ablation = json.loads((root / "reports" / "ablation.json").read_text(encoding="utf-8"))
+    full = ablation["results"]["all_detectors"]
+    without_ledger = ablation["results"]["without_control_ledger"]
+    assert full["f1"] == 1.0
+    assert without_ledger["false_negative"] > full["false_negative"]
+    assert without_ledger["recall"] < full["recall"]
+
+
 def test_api_evidence_reconstruction_and_oracle_db_isolation(tmp_path):
     clean, witnesses, observed, oracle, ledger = generated(120, 113)
-    incidents = detect(clean, witnesses, observed, ledger)
+    incidents = apply_calibration(
+        detect(clean, witnesses, observed, ledger),
+        load_calibrator(Path(__file__).resolve().parents[1] / "reports" / "calibration.json"),
+    )
     reconstructed, decisions = reconstruct_manifest(observed, incidents)
     metrics = evaluate_detection(
         oracle, incidents, decisions, reconstructed.to_dict(orient="records")
@@ -281,6 +323,8 @@ def test_api_evidence_reconstruction_and_oracle_db_isolation(tmp_path):
         detail = client.get(f"/api/incidents/{listed[0]['record_id']}").json()
         assert detail["incident"]["evidence"]
         assert detail["incident"]["counterfactual"]
+        assert 0 <= detail["incident"]["detection_probability"] <= 1
+        assert detail["incident"]["type_probabilities_calibrated"]
         assert detail["reconstruction"]["method"]
         output = client.get("/api/reconstruction/manifest").json()
         assert output

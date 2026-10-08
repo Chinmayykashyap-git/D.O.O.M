@@ -23,6 +23,9 @@ type Incident = {
   confidence: number; evidence: Evidence[]; detectors: string[];
   related_records: string[]; record_missing?: boolean;
   type_probabilities?: Record<string, number>;
+  detection_probability?: number;
+  type_probabilities_calibrated?: Record<string, number>;
+  type_prediction_calibrated?: string;
   counterfactual?: string;
 };
 type RecordRow = Record<string, string | number | null>;
@@ -254,7 +257,97 @@ function RouteMap({ routes, compact = false }: { routes: { code: string; name: s
 }
 
 function IncidentDrawer({ incident, detail, close }: { incident: Incident; detail: { incident: Incident | null; record: RecordRow | null; reconstruction: Decision | null; timeline: { event: string; time: string | null }[] } | null; close: () => void }) {
-  return <div className="drawer-scrim" onClick={close}><aside className="incident-drawer" onClick={(event) => event.stopPropagation()}><header className="drawer-head"><div><span className="drawer-kicker"><Crosshair size={14} /> FORENSIC CASE FILE</span><button className="drawer-close" onClick={close} aria-label="Close case file"><X size={18} /></button></div><h2>{incident.record_id}</h2><StatusBadge value={incident.tampering_type} /></header><div className="drawer-content"><div className="drawer-risk"><div><span>RISK SCORE</span><RiskBadge value={incident.risk_score} /></div><div><span>DETECTION CONFIDENCE</span><b>{(incident.confidence * 100).toFixed(0)}%</b></div></div><section className="drawer-section"><PanelHeading icon={ScanEye} title="Evidence matrix" kicker={`${incident.evidence.length} OBSERVATIONS`} />{incident.evidence.map((item, index) => <div className="evidence-item" key={`${item.detector_id}:${item.evidence_code}:${index}`}><span className={`evidence-severity ${item.severity.toLowerCase()}`} /><div><b>{pretty(item.evidence_code)}</b><p>{item.explanation}</p><small>{item.detector_id.replaceAll("_", " ")} · {item.field} · {item.severity} SIGNAL · +{item.score_contribution.toFixed(2)}</small><p className="evidence-comparison">EXPECTED {JSON.stringify(item.expected)} <span>→</span> OBSERVED {JSON.stringify(item.observed)}</p></div></div>)}</section>{incident.counterfactual && <section className="drawer-section"><PanelHeading icon={Crosshair} title="Counterfactual" kicker="WHAT WOULD CLEAR THIS FINDING" /><p className="body-copy">{incident.counterfactual}</p></section>}<section className="drawer-section"><PanelHeading icon={Crosshair} title="Detectors involved" kicker="FUSION PATH" /><div className="drawer-pills">{incident.detectors.map((name) => <span key={name}>{name.replaceAll("_", " ")}</span>)}</div></section><section className="drawer-section"><PanelHeading icon={Fingerprint} title="Related records" kicker="LINKED MANIFEST EVIDENCE" />{incident.related_records.length ? incident.related_records.map((id) => <div className="related-record" key={id}><Database size={13} /><span>{id}</span><ChevronRight size={14} /></div>) : <p className="no-related">No linked record identified.</p>}</section><section className="drawer-section"><PanelHeading icon={Boxes} title="Reconstruction decision" kicker="EXPLICIT / AUDITABLE" />{detail?.reconstruction ? <div className="recon-decision"><StatusBadge value={detail.reconstruction.status} /><p>{detail.reconstruction.explanation}</p>{detail.reconstruction.changes.map((change) => <div className="change-set" key={change.field}><span>{change.field.toUpperCase()}</span><b>{change.from}</b><ArrowDownRight size={14} /><b className="changed-value">{change.to}</b></div>)}</div> : <div className="loading-line"><span className="mini-led brass" />Loading reconstruction record…</div>}</section><section className="drawer-section"><PanelHeading icon={Clock3} title="Case timeline" kicker="EVIDENCE CHAIN" />{detail?.timeline.map((item, index) => <div className="case-timeline-row" key={item.event}><span className="timeline-index">0{index + 1}</span><div><b>{item.event}</b><small>{item.time ? new Date(item.time).toLocaleString() : "Recorded in local evidence ledger"}</small></div></div>)}</section>{detail?.record && <section className="drawer-section"><PanelHeading icon={Database} title="Observed record" kicker="RAW MANIFEST FIELDS" /><pre className="record-json">{JSON.stringify(detail.record, null, 2)}</pre></section>}</div></aside></div>;
+  const classProbabilities = Object.entries(incident.type_probabilities_calibrated ?? {})
+    .sort(([, left], [, right]) => right - left)
+    .slice(0, 3);
+  return (
+    <div className="drawer-scrim" onClick={close}>
+      <aside className="incident-drawer" onClick={(event) => event.stopPropagation()}>
+        <header className="drawer-head">
+          <div>
+            <span className="drawer-kicker"><Crosshair size={14} /> FORENSIC CASE FILE</span>
+            <button className="drawer-close" onClick={close} aria-label="Close case file"><X size={18} /></button>
+          </div>
+          <h2>{incident.record_id}</h2>
+          <StatusBadge value={incident.tampering_type} />
+        </header>
+        <div className="drawer-content">
+          <div className="drawer-risk">
+            <div><span>RISK SCORE</span><RiskBadge value={incident.risk_score} /></div>
+            <div><span>CALIBRATED DETECTION</span><b>{((incident.detection_probability ?? incident.confidence) * 100).toFixed(1)}%</b></div>
+          </div>
+          {classProbabilities.length > 0 && (
+            <section className="drawer-section">
+              <PanelHeading icon={Gauge} title="Calibrated class estimates" kicker="SYNTHETIC SEED HOLDOUT" />
+              <div className="calibration-list">{classProbabilities.map(([name, probability]) => (
+                <div key={name}><span>{pretty(name)}</span><b>{(probability * 100).toFixed(1)}%</b></div>
+              ))}</div>
+            </section>
+          )}
+          <section className="drawer-section">
+            <PanelHeading icon={ScanEye} title="Evidence matrix" kicker={`${incident.evidence.length} OBSERVATIONS`} />
+            {incident.evidence.map((item, index) => (
+              <div className="evidence-item" key={`${item.detector_id}:${item.evidence_code}:${index}`}>
+                <span className={`evidence-severity ${item.severity.toLowerCase()}`} />
+                <div>
+                  <b>{pretty(item.evidence_code)}</b>
+                  <p>{item.explanation}</p>
+                  <small>{item.detector_id.replaceAll("_", " ")} · {item.field} · {item.severity} SIGNAL · +{item.score_contribution.toFixed(2)}</small>
+                  <p className="evidence-comparison">EXPECTED {JSON.stringify(item.expected)} <span>→</span> OBSERVED {JSON.stringify(item.observed)}</p>
+                </div>
+              </div>
+            ))}
+          </section>
+          {incident.counterfactual && (
+            <section className="drawer-section">
+              <PanelHeading icon={Crosshair} title="Counterfactual" kicker="WHAT WOULD CLEAR THIS FINDING" />
+              <p className="body-copy">{incident.counterfactual}</p>
+            </section>
+          )}
+          <section className="drawer-section">
+            <PanelHeading icon={Crosshair} title="Detectors involved" kicker="FUSION PATH" />
+            <div className="drawer-pills">{incident.detectors.map((name) => <span key={name}>{name.replaceAll("_", " ")}</span>)}</div>
+          </section>
+          <section className="drawer-section">
+            <PanelHeading icon={Fingerprint} title="Related records" kicker="LINKED MANIFEST EVIDENCE" />
+            {incident.related_records.length ? incident.related_records.map((id) => (
+              <div className="related-record" key={id}><Database size={13} /><span>{id}</span><ChevronRight size={14} /></div>
+            )) : <p className="no-related">No linked record identified.</p>}
+          </section>
+          <section className="drawer-section">
+            <PanelHeading icon={Boxes} title="Reconstruction decision" kicker="EXPLICIT / AUDITABLE" />
+            {detail?.reconstruction ? (
+              <div className="recon-decision">
+                <StatusBadge value={detail.reconstruction.status} />
+                <p>{detail.reconstruction.explanation}</p>
+                {detail.reconstruction.changes.map((change) => (
+                  <div className="change-set" key={change.field}>
+                    <span>{change.field.toUpperCase()}</span><b>{change.from}</b>
+                    <ArrowDownRight size={14} /><b className="changed-value">{change.to}</b>
+                  </div>
+                ))}
+              </div>
+            ) : <div className="loading-line"><span className="mini-led brass" />Loading reconstruction record…</div>}
+          </section>
+          <section className="drawer-section">
+            <PanelHeading icon={Clock3} title="Case timeline" kicker="EVIDENCE CHAIN" />
+            {detail?.timeline.map((item, index) => (
+              <div className="case-timeline-row" key={item.event}>
+                <span className="timeline-index">0{index + 1}</span>
+                <div><b>{item.event}</b><small>{item.time ? new Date(item.time).toLocaleString() : "Recorded in local evidence ledger"}</small></div>
+              </div>
+            ))}
+          </section>
+          {detail?.record && (
+            <section className="drawer-section">
+              <PanelHeading icon={Database} title="Observed record" kicker="RAW MANIFEST FIELDS" />
+              <pre className="record-json">{JSON.stringify(detail.record, null, 2)}</pre>
+            </section>
+          )}
+        </div>
+      </aside>
+    </div>
+  );
 }
 
 window.addEventListener("doom:nav", ((event: CustomEvent<ModuleKey>) => {

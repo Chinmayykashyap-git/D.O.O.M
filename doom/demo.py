@@ -15,6 +15,7 @@ from pathlib import Path
 import uvicorn
 
 from doom.api import create_app
+from doom.calibration import apply_calibration, fit_calibration_study, load_calibrator
 from doom.corruption import ATTACK_TYPES, inject_attacks
 from doom.detectors import ManifestDetector
 from doom.generator import (
@@ -32,6 +33,7 @@ from doom.streaming import StreamingService
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.environ.get("DOOM_DATA_DIR", str(ROOT / "data"))).resolve()
+CALIBRATION_PATH = ROOT / "reports" / "calibration.json"
 
 
 def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
@@ -51,6 +53,13 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
         expected_ledger=control_ledger,
         witnesses=witnesses,
     )
+    calibrator = load_calibrator(CALIBRATION_PATH)
+    if calibrator is None:
+        fit_calibration_study(CALIBRATION_PATH)
+        calibrator = load_calibrator(CALIBRATION_PATH)
+    if calibrator is None:
+        raise RuntimeError(f"Calibration artifact was not created at {CALIBRATION_PATH}")
+    incidents = apply_calibration(incidents, calibrator)
     repaired, decisions = reconstruct_manifest(corrupted, incidents)
     evaluator_truth = OracleStore(DATA_DIR / "oracle" / "attack_truth.sqlite3").entries()
     metrics = evaluate_detection(
@@ -70,6 +79,9 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
             for kind in {item["tampering_type"] for item in incidents}
         }.items())),
         "attack_types": list(ATTACK_TYPES),
+        "calibration": calibrator["study"]["evaluation"],
+        "calibration_training_seeds": calibrator["study"]["training_seeds"],
+        "calibration_evaluation_seeds": calibrator["study"]["evaluation_seeds"],
     }
     reports = ROOT / "reports"
     reports.mkdir(parents=True, exist_ok=True)

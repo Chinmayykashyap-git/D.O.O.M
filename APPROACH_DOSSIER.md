@@ -15,7 +15,7 @@ Demonstrate a defensible local forensic flow rather than claim an oracle can inf
 7. **Deletion/fabrication:** compare record IDs and sequence with the expected ledger; never infer or recover deleted values from attack labels.
 8. **Open-set streaming:** flag unrecognized fields with schema-novelty evidence. `policy_epoch` exists in the stream demo but not in batch injection.
 
-Evidence contributions are rule strengths, not calibrated probabilities. Per-type scores are uncalibrated hypotheses until a separately trained and evaluated calibration artifact is implemented. Confidence remains distinct from incident risk.
+Evidence contributions and `type_probabilities` are rule strengths, not probabilities. The demo also reports `detection_probability` and `type_probabilities_calibrated`, produced by standardized logistic models fitted on synthetic seeds 113/401/809/1301 and evaluated on separate seeds 1501/1907. On those two evaluation seeds, detection Brier score changed from 0.000099 (raw strongest-rule score) to 0.000000 (calibrated, rounded), ECE from 0.002351 to 0.000093, and type accuracy was 1.0; full results are in `reports/calibration.json`. This demonstrates calibration only within this generator's synthetic evidence distribution. Confidence remains distinct from incident risk.
 
 ## Reconstruction doctrine
 
@@ -33,3 +33,5 @@ The demonstration computes record-level and per-type detection, type confusion, 
 ## Demonstration boundaries
 
 All names, shipments, times, amounts, routes, hashes, customs entries, witnesses, anomalies, and results are synthetic. The route catalog is intentionally small. The control ledger is not cryptographically signed; its hash chain alone does not protect against an attacker who can replace both data and ledger. The stream is a local simulation without an external broker, authenticated producer, durable queue, or high-availability guarantees.
+
+The fixed seed-1907 one-factor ablation retained 1.0 F1 with all detector groups enabled. Removing the control ledger reduced recall to 0.9167; removing duplicate detection, relational analysis, and temporal analysis reduced type accuracy to 0.8333, 0.7143, and 0.9167 respectively. Several checks are redundant on these injected cases; see `reports/ablation.json`. This diagnostic does not establish general detector value outside this suite.
