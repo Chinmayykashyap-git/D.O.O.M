@@ -1,615 +1,3497 @@
 {
-  "injected_attacks": 168,
-  "detected_records": 168,
-  "true_positive": 168,
-  "false_positive": 0,
-  "false_negative": 0,
-  "precision": 1.0,
-  "recall": 1.0,
-  "f1": 1.0,
-  "type_accuracy_on_detected": 1.0,
-  "per_attack": {
-    "DELETED": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "DUPLICATE_EXACT": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "DUPLICATE_NEAR": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "FABRICATED": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "MODIFIED_VALUE": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "NEGATIVE_TRANSIT": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "PORT_SKIP": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "RELATIONAL_ORPHAN": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "SLOW_DRIFT": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "TELEPORTATION": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "TIMESTAMP_SHIFT": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    },
-    "VESSEL_MISMATCH": {
-      "support": 14,
-      "true_positive": 14,
-      "false_positive": 0,
-      "false_negative": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0
-    }
-  },
-  "type_confusion_matrix": {
-    "DELETED": {
-      "DELETED": 14,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "DUPLICATE_EXACT": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 14,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "DUPLICATE_NEAR": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 14,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "FABRICATED": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 14,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "MODIFIED_VALUE": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 14,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "NEGATIVE_TRANSIT": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 14,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "PORT_SKIP": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 14,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "RELATIONAL_ORPHAN": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 14,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "SLOW_DRIFT": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 14,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "TELEPORTATION": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 14,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 0
-    },
-    "TIMESTAMP_SHIFT": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 14,
-      "VESSEL_MISMATCH": 0
-    },
-    "VESSEL_MISMATCH": {
-      "DELETED": 0,
-      "DUPLICATE_EXACT": 0,
-      "DUPLICATE_NEAR": 0,
-      "FABRICATED": 0,
-      "MODIFIED_VALUE": 0,
-      "NEGATIVE_TRANSIT": 0,
-      "PORT_SKIP": 0,
-      "RELATIONAL_ORPHAN": 0,
-      "SLOW_DRIFT": 0,
-      "TELEPORTATION": 0,
-      "TIMESTAMP_SHIFT": 0,
-      "VESSEL_MISMATCH": 14
-    }
-  },
-  "evaluation_scope": "Synthetic record-level comparison against a separately stored injection oracle; not a production benchmark.",
-  "reconstruction": {
-    "status_accuracy": 1.0,
-    "status_correct": 168,
-    "status_total": 168,
-    "field_accuracy": 1.0,
-    "field_coverage": 0.875,
-    "field_correct": 392,
-    "field_total": 392,
-    "per_attack": {
-      "DELETED": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 0.8095,
-        "status_support": 14,
-        "field_support": 238,
-        "field_target": 294
-      },
-      "DUPLICATE_EXACT": {
-        "status_accuracy": 1.0,
-        "field_accuracy": null,
-        "field_coverage": null,
-        "status_support": 14,
-        "field_support": 0,
-        "field_target": 0
-      },
-      "DUPLICATE_NEAR": {
-        "status_accuracy": 1.0,
-        "field_accuracy": null,
-        "field_coverage": null,
-        "status_support": 14,
-        "field_support": 0,
-        "field_target": 0
-      },
-      "FABRICATED": {
-        "status_accuracy": 1.0,
-        "field_accuracy": null,
-        "field_coverage": null,
-        "status_support": 14,
-        "field_support": 0,
-        "field_target": 0
-      },
-      "MODIFIED_VALUE": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 28,
-        "field_target": 28
-      },
-      "NEGATIVE_TRANSIT": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 14,
-        "field_target": 14
-      },
-      "PORT_SKIP": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 28,
-        "field_target": 28
-      },
-      "RELATIONAL_ORPHAN": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 14,
-        "field_target": 14
-      },
-      "SLOW_DRIFT": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 28,
-        "field_target": 28
-      },
-      "TELEPORTATION": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 14,
-        "field_target": 14
-      },
-      "TIMESTAMP_SHIFT": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 14,
-        "field_target": 14
-      },
-      "VESSEL_MISMATCH": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "status_support": 14,
-        "field_support": 14,
-        "field_target": 14
-      }
-    },
-    "by_status": {
-      "ORIGINAL": {
-        "status_accuracy": null,
-        "field_accuracy": null,
-        "field_coverage": null,
-        "support": 0,
-        "decision_count": 2274,
-        "field_support": 0,
-        "field_target": 0
-      },
-      "REMOVED": {
-        "status_accuracy": 1.0,
-        "field_accuracy": null,
-        "field_coverage": null,
-        "support": 42,
-        "decision_count": 42,
-        "field_support": 0,
-        "field_target": 0
-      },
-      "REPAIRED": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 1.0,
-        "support": 112,
-        "decision_count": 112,
-        "field_support": 154,
-        "field_target": 154
-      },
-      "UNRECOVERABLE": {
-        "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
-        "field_coverage": 0.8095,
-        "support": 14,
-        "decision_count": 14,
-        "field_support": 238,
-        "field_target": 294
-      }
-    },
-    "disposition_counts": {
-      "ORIGINAL": 2274,
-      "REMOVED": 42,
-      "REPAIRED": 112,
-      "UNRECOVERABLE": 14
-    },
-    "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
-  },
-  "generated_records": 2400,
-  "corrupted_records": 2428,
-  "reconstructed_rows": 2386,
-  "reconstruction_decisions": 2442,
-  "incident_types": {
-    "DELETED": 14,
-    "DUPLICATE_EXACT": 14,
-    "DUPLICATE_NEAR": 14,
-    "FABRICATED": 14,
-    "MODIFIED_VALUE": 14,
-    "NEGATIVE_TRANSIT": 14,
-    "PORT_SKIP": 14,
-    "RELATIONAL_ORPHAN": 14,
-    "SLOW_DRIFT": 14,
-    "TELEPORTATION": 14,
-    "TIMESTAMP_SHIFT": 14,
-    "VESSEL_MISMATCH": 14
-  },
-  "attack_types": [
-    "MODIFIED_VALUE",
-    "DELETED",
-    "DUPLICATE_EXACT",
-    "DUPLICATE_NEAR",
-    "FABRICATED",
-    "TIMESTAMP_SHIFT",
-    "TELEPORTATION",
-    "PORT_SKIP",
-    "NEGATIVE_TRANSIT",
-    "RELATIONAL_ORPHAN",
-    "VESSEL_MISMATCH",
-    "SLOW_DRIFT"
-  ],
-  "calibration": {
+  "known_evaluation": {
+    "seeds": [
+      19,
+      41,
+      75,
+      2222,
+      31415
+    ],
+    "record_count_per_seed": 1200,
     "by_seed": {
-      "1501": {
-        "record_support": 1221,
-        "attack_support": 84,
-        "detection_brier_raw": 9.9e-05,
-        "detection_brier_calibrated": 0.0,
-        "detection_ece_raw": 0.002351,
-        "detection_ece_calibrated": 9.3e-05,
-        "detection_reliability_raw": [
-          {
-            "count": 1137,
-            "mean_predicted_probability": 0.0,
-            "observed_frequency": 0.0
+      "19": {
+        "injected_attacks": 84,
+        "detected_records": 84,
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy_on_detected": 1.0,
+        "per_attack": {
+          "DELETED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           },
-          {
-            "count": 84,
-            "mean_predicted_probability": 0.965833,
-            "observed_frequency": 1.0
-          }
-        ],
-        "detection_reliability_calibrated": [
-          {
-            "count": 1137,
-            "mean_predicted_probability": 9.9e-05,
-            "observed_frequency": 0.0
+          "DUPLICATE_EXACT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           },
-          {
-            "count": 84,
-            "mean_predicted_probability": 0.999997,
-            "observed_frequency": 1.0
+          "DUPLICATE_NEAR": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "FABRICATED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "MODIFIED_VALUE": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NEGATIVE_TRANSIT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "PORT_SKIP": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "RELATIONAL_ORPHAN": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "SLOW_DRIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TELEPORTATION": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TIMESTAMP_SHIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "VESSEL_MISMATCH": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           }
-        ],
-        "type_accuracy": 1.0,
-        "type_log_loss": 0.006865,
-        "type_brier": 6.1e-05,
-        "type_top_label_ece": 0.006839,
-        "type_reliability": [
-          {
-            "count": 84,
-            "mean_predicted_probability": 0.993161,
-            "observed_frequency": 1.0
+        },
+        "type_confusion_matrix": {
+          "DELETED": {
+            "DELETED": 7,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_EXACT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 7,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_NEAR": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 7,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "FABRICATED": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 7,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "MODIFIED_VALUE": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 7,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "NEGATIVE_TRANSIT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 7,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "PORT_SKIP": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 7,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "RELATIONAL_ORPHAN": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 7,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "SLOW_DRIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 7,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TELEPORTATION": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 7,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TIMESTAMP_SHIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 7,
+            "VESSEL_MISMATCH": 0
+          },
+          "VESSEL_MISMATCH": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 7
           }
-        ]
+        },
+        "evaluation_scope": "Synthetic record-level comparison against a separately stored injection oracle; not a production benchmark.",
+        "reconstruction": {
+          "status_accuracy": 1.0,
+          "status_correct": 84,
+          "status_total": 84,
+          "field_accuracy": 1.0,
+          "field_coverage": 0.875,
+          "field_correct": 196,
+          "field_total": 196,
+          "per_attack": {
+            "DELETED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "status_support": 7,
+              "field_support": 119,
+              "field_target": 147
+            },
+            "DUPLICATE_EXACT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "DUPLICATE_NEAR": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "FABRICATED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "MODIFIED_VALUE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "NEGATIVE_TRANSIT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "PORT_SKIP": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "RELATIONAL_ORPHAN": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "SLOW_DRIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "TELEPORTATION": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "TIMESTAMP_SHIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "VESSEL_MISMATCH": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            }
+          },
+          "by_status": {
+            "ORIGINAL": {
+              "status_accuracy": null,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 0,
+              "decision_count": 1137,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REMOVED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 21,
+              "decision_count": 21,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REPAIRED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "support": 56,
+              "decision_count": 56,
+              "field_support": 77,
+              "field_target": 77
+            },
+            "UNRECOVERABLE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "support": 7,
+              "decision_count": 7,
+              "field_support": 119,
+              "field_target": 147
+            }
+          },
+          "disposition_counts": {
+            "ORIGINAL": 1137,
+            "REMOVED": 21,
+            "REPAIRED": 56,
+            "UNRECOVERABLE": 7
+          },
+          "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
+        }
       },
-      "1907": {
-        "record_support": 1221,
-        "attack_support": 84,
-        "detection_brier_raw": 9.9e-05,
-        "detection_brier_calibrated": 0.0,
-        "detection_ece_raw": 0.002351,
-        "detection_ece_calibrated": 9.3e-05,
-        "detection_reliability_raw": [
-          {
-            "count": 1137,
-            "mean_predicted_probability": 0.0,
-            "observed_frequency": 0.0
+      "41": {
+        "injected_attacks": 84,
+        "detected_records": 84,
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy_on_detected": 1.0,
+        "per_attack": {
+          "DELETED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           },
-          {
-            "count": 84,
-            "mean_predicted_probability": 0.965833,
-            "observed_frequency": 1.0
-          }
-        ],
-        "detection_reliability_calibrated": [
-          {
-            "count": 1137,
-            "mean_predicted_probability": 9.9e-05,
-            "observed_frequency": 0.0
+          "DUPLICATE_EXACT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           },
-          {
-            "count": 84,
-            "mean_predicted_probability": 0.999997,
-            "observed_frequency": 1.0
+          "DUPLICATE_NEAR": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "FABRICATED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "MODIFIED_VALUE": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NEGATIVE_TRANSIT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "PORT_SKIP": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "RELATIONAL_ORPHAN": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "SLOW_DRIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TELEPORTATION": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TIMESTAMP_SHIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "VESSEL_MISMATCH": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
           }
-        ],
-        "type_accuracy": 1.0,
-        "type_log_loss": 0.006891,
-        "type_brier": 6.1e-05,
-        "type_top_label_ece": 0.006864,
-        "type_reliability": [
-          {
-            "count": 84,
-            "mean_predicted_probability": 0.993136,
-            "observed_frequency": 1.0
+        },
+        "type_confusion_matrix": {
+          "DELETED": {
+            "DELETED": 7,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_EXACT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 7,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_NEAR": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 7,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "FABRICATED": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 7,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "MODIFIED_VALUE": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 7,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "NEGATIVE_TRANSIT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 7,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "PORT_SKIP": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 7,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "RELATIONAL_ORPHAN": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 7,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "SLOW_DRIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 7,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TELEPORTATION": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 7,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TIMESTAMP_SHIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 7,
+            "VESSEL_MISMATCH": 0
+          },
+          "VESSEL_MISMATCH": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 7
           }
-        ]
+        },
+        "evaluation_scope": "Synthetic record-level comparison against a separately stored injection oracle; not a production benchmark.",
+        "reconstruction": {
+          "status_accuracy": 1.0,
+          "status_correct": 84,
+          "status_total": 84,
+          "field_accuracy": 1.0,
+          "field_coverage": 0.875,
+          "field_correct": 196,
+          "field_total": 196,
+          "per_attack": {
+            "DELETED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "status_support": 7,
+              "field_support": 119,
+              "field_target": 147
+            },
+            "DUPLICATE_EXACT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "DUPLICATE_NEAR": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "FABRICATED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "MODIFIED_VALUE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "NEGATIVE_TRANSIT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "PORT_SKIP": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "RELATIONAL_ORPHAN": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "SLOW_DRIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "TELEPORTATION": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "TIMESTAMP_SHIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "VESSEL_MISMATCH": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            }
+          },
+          "by_status": {
+            "ORIGINAL": {
+              "status_accuracy": null,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 0,
+              "decision_count": 1137,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REMOVED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 21,
+              "decision_count": 21,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REPAIRED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "support": 56,
+              "decision_count": 56,
+              "field_support": 77,
+              "field_target": 77
+            },
+            "UNRECOVERABLE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "support": 7,
+              "decision_count": 7,
+              "field_support": 119,
+              "field_target": 147
+            }
+          },
+          "disposition_counts": {
+            "ORIGINAL": 1137,
+            "REMOVED": 21,
+            "REPAIRED": 56,
+            "UNRECOVERABLE": 7
+          },
+          "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
+        }
+      },
+      "75": {
+        "injected_attacks": 84,
+        "detected_records": 84,
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy_on_detected": 1.0,
+        "per_attack": {
+          "DELETED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "DUPLICATE_EXACT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "DUPLICATE_NEAR": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "FABRICATED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "MODIFIED_VALUE": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NEGATIVE_TRANSIT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "PORT_SKIP": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "RELATIONAL_ORPHAN": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "SLOW_DRIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TELEPORTATION": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TIMESTAMP_SHIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "VESSEL_MISMATCH": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "type_confusion_matrix": {
+          "DELETED": {
+            "DELETED": 7,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_EXACT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 7,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_NEAR": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 7,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "FABRICATED": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 7,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "MODIFIED_VALUE": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 7,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "NEGATIVE_TRANSIT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 7,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "PORT_SKIP": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 7,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "RELATIONAL_ORPHAN": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 7,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "SLOW_DRIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 7,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TELEPORTATION": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 7,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TIMESTAMP_SHIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 7,
+            "VESSEL_MISMATCH": 0
+          },
+          "VESSEL_MISMATCH": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 7
+          }
+        },
+        "evaluation_scope": "Synthetic record-level comparison against a separately stored injection oracle; not a production benchmark.",
+        "reconstruction": {
+          "status_accuracy": 1.0,
+          "status_correct": 84,
+          "status_total": 84,
+          "field_accuracy": 1.0,
+          "field_coverage": 0.875,
+          "field_correct": 196,
+          "field_total": 196,
+          "per_attack": {
+            "DELETED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "status_support": 7,
+              "field_support": 119,
+              "field_target": 147
+            },
+            "DUPLICATE_EXACT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "DUPLICATE_NEAR": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "FABRICATED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "MODIFIED_VALUE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "NEGATIVE_TRANSIT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "PORT_SKIP": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "RELATIONAL_ORPHAN": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "SLOW_DRIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "TELEPORTATION": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "TIMESTAMP_SHIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "VESSEL_MISMATCH": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            }
+          },
+          "by_status": {
+            "ORIGINAL": {
+              "status_accuracy": null,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 0,
+              "decision_count": 1137,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REMOVED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 21,
+              "decision_count": 21,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REPAIRED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "support": 56,
+              "decision_count": 56,
+              "field_support": 77,
+              "field_target": 77
+            },
+            "UNRECOVERABLE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "support": 7,
+              "decision_count": 7,
+              "field_support": 119,
+              "field_target": 147
+            }
+          },
+          "disposition_counts": {
+            "ORIGINAL": 1137,
+            "REMOVED": 21,
+            "REPAIRED": 56,
+            "UNRECOVERABLE": 7
+          },
+          "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
+        }
+      },
+      "2222": {
+        "injected_attacks": 84,
+        "detected_records": 84,
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy_on_detected": 1.0,
+        "per_attack": {
+          "DELETED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "DUPLICATE_EXACT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "DUPLICATE_NEAR": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "FABRICATED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "MODIFIED_VALUE": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NEGATIVE_TRANSIT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "PORT_SKIP": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "RELATIONAL_ORPHAN": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "SLOW_DRIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TELEPORTATION": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TIMESTAMP_SHIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "VESSEL_MISMATCH": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "type_confusion_matrix": {
+          "DELETED": {
+            "DELETED": 7,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_EXACT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 7,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_NEAR": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 7,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "FABRICATED": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 7,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "MODIFIED_VALUE": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 7,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "NEGATIVE_TRANSIT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 7,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "PORT_SKIP": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 7,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "RELATIONAL_ORPHAN": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 7,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "SLOW_DRIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 7,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TELEPORTATION": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 7,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TIMESTAMP_SHIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 7,
+            "VESSEL_MISMATCH": 0
+          },
+          "VESSEL_MISMATCH": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 7
+          }
+        },
+        "evaluation_scope": "Synthetic record-level comparison against a separately stored injection oracle; not a production benchmark.",
+        "reconstruction": {
+          "status_accuracy": 1.0,
+          "status_correct": 84,
+          "status_total": 84,
+          "field_accuracy": 1.0,
+          "field_coverage": 0.875,
+          "field_correct": 196,
+          "field_total": 196,
+          "per_attack": {
+            "DELETED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "status_support": 7,
+              "field_support": 119,
+              "field_target": 147
+            },
+            "DUPLICATE_EXACT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "DUPLICATE_NEAR": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "FABRICATED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "MODIFIED_VALUE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "NEGATIVE_TRANSIT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "PORT_SKIP": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "RELATIONAL_ORPHAN": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "SLOW_DRIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "TELEPORTATION": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "TIMESTAMP_SHIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "VESSEL_MISMATCH": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            }
+          },
+          "by_status": {
+            "ORIGINAL": {
+              "status_accuracy": null,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 0,
+              "decision_count": 1137,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REMOVED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 21,
+              "decision_count": 21,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REPAIRED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "support": 56,
+              "decision_count": 56,
+              "field_support": 77,
+              "field_target": 77
+            },
+            "UNRECOVERABLE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "support": 7,
+              "decision_count": 7,
+              "field_support": 119,
+              "field_target": 147
+            }
+          },
+          "disposition_counts": {
+            "ORIGINAL": 1137,
+            "REMOVED": 21,
+            "REPAIRED": 56,
+            "UNRECOVERABLE": 7
+          },
+          "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
+        }
+      },
+      "31415": {
+        "injected_attacks": 84,
+        "detected_records": 84,
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy_on_detected": 1.0,
+        "per_attack": {
+          "DELETED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "DUPLICATE_EXACT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "DUPLICATE_NEAR": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "FABRICATED": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "MODIFIED_VALUE": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "NEGATIVE_TRANSIT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "PORT_SKIP": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "RELATIONAL_ORPHAN": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "SLOW_DRIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TELEPORTATION": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "TIMESTAMP_SHIFT": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "VESSEL_MISMATCH": {
+            "support": 7,
+            "true_positive": 7,
+            "false_positive": 0,
+            "false_negative": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "type_confusion_matrix": {
+          "DELETED": {
+            "DELETED": 7,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_EXACT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 7,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "DUPLICATE_NEAR": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 7,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "FABRICATED": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 7,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "MODIFIED_VALUE": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 7,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "NEGATIVE_TRANSIT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 7,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "PORT_SKIP": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 7,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "RELATIONAL_ORPHAN": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 7,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "SLOW_DRIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 7,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TELEPORTATION": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 7,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 0
+          },
+          "TIMESTAMP_SHIFT": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 7,
+            "VESSEL_MISMATCH": 0
+          },
+          "VESSEL_MISMATCH": {
+            "DELETED": 0,
+            "DUPLICATE_EXACT": 0,
+            "DUPLICATE_NEAR": 0,
+            "FABRICATED": 0,
+            "MODIFIED_VALUE": 0,
+            "NEGATIVE_TRANSIT": 0,
+            "PORT_SKIP": 0,
+            "RELATIONAL_ORPHAN": 0,
+            "SLOW_DRIFT": 0,
+            "TELEPORTATION": 0,
+            "TIMESTAMP_SHIFT": 0,
+            "VESSEL_MISMATCH": 7
+          }
+        },
+        "evaluation_scope": "Synthetic record-level comparison against a separately stored injection oracle; not a production benchmark.",
+        "reconstruction": {
+          "status_accuracy": 1.0,
+          "status_correct": 84,
+          "status_total": 84,
+          "field_accuracy": 1.0,
+          "field_coverage": 0.875,
+          "field_correct": 196,
+          "field_total": 196,
+          "per_attack": {
+            "DELETED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "status_support": 7,
+              "field_support": 119,
+              "field_target": 147
+            },
+            "DUPLICATE_EXACT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "DUPLICATE_NEAR": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "FABRICATED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "status_support": 7,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "MODIFIED_VALUE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "NEGATIVE_TRANSIT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "PORT_SKIP": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "RELATIONAL_ORPHAN": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "SLOW_DRIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 14,
+              "field_target": 14
+            },
+            "TELEPORTATION": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "TIMESTAMP_SHIFT": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            },
+            "VESSEL_MISMATCH": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "status_support": 7,
+              "field_support": 7,
+              "field_target": 7
+            }
+          },
+          "by_status": {
+            "ORIGINAL": {
+              "status_accuracy": null,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 0,
+              "decision_count": 1137,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REMOVED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": null,
+              "field_coverage": null,
+              "support": 21,
+              "decision_count": 21,
+              "field_support": 0,
+              "field_target": 0
+            },
+            "REPAIRED": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 1.0,
+              "support": 56,
+              "decision_count": 56,
+              "field_support": 77,
+              "field_target": 77
+            },
+            "UNRECOVERABLE": {
+              "status_accuracy": 1.0,
+              "field_accuracy": 1.0,
+              "field_coverage": 0.8095,
+              "support": 7,
+              "decision_count": 7,
+              "field_support": 119,
+              "field_target": 147
+            }
+          },
+          "disposition_counts": {
+            "ORIGINAL": 1137,
+            "REMOVED": 21,
+            "REPAIRED": 56,
+            "UNRECOVERABLE": 7
+          },
+          "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
+        }
       }
     },
-    "detection_brier_raw": 9.9e-05,
-    "detection_brier_calibrated": 0.0,
-    "detection_ece_raw": 0.002351,
-    "detection_ece_calibrated": 9.3e-05,
-    "detection_reliability_raw": [
-      {
-        "count": 2274,
-        "mean_predicted_probability": 0.0,
-        "observed_frequency": 0.0
+    "aggregate": {
+      "precision_recall_f1": {
+        "precision": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "recall": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "f1": {
+          "mean": 1.0,
+          "std": 0.0
+        }
       },
-      {
-        "count": 168,
-        "mean_predicted_probability": 0.965833,
-        "observed_frequency": 1.0
-      }
-    ],
-    "detection_reliability_calibrated": [
-      {
-        "count": 2274,
-        "mean_predicted_probability": 9.9e-05,
-        "observed_frequency": 0.0
+      "type_accuracy": {
+        "mean": 1.0,
+        "std": 0.0
       },
-      {
-        "count": 168,
-        "mean_predicted_probability": 0.999997,
-        "observed_frequency": 1.0
+      "reconstruction": {
+        "status_accuracy": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "field_accuracy": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "field_coverage": {
+          "mean": 0.875,
+          "std": 0.0
+        },
+        "by_attack": {
+          "DELETED": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 0.8095,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 595,
+            "field_target_total": 735
+          },
+          "DUPLICATE_EXACT": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": null,
+              "std": null
+            },
+            "field_coverage": {
+              "mean": null,
+              "std": null
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 0,
+            "field_target_total": 0
+          },
+          "DUPLICATE_NEAR": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": null,
+              "std": null
+            },
+            "field_coverage": {
+              "mean": null,
+              "std": null
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 0,
+            "field_target_total": 0
+          },
+          "FABRICATED": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": null,
+              "std": null
+            },
+            "field_coverage": {
+              "mean": null,
+              "std": null
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 0,
+            "field_target_total": 0
+          },
+          "MODIFIED_VALUE": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 70,
+            "field_target_total": 70
+          },
+          "NEGATIVE_TRANSIT": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 35,
+            "field_target_total": 35
+          },
+          "PORT_SKIP": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 70,
+            "field_target_total": 70
+          },
+          "RELATIONAL_ORPHAN": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 35,
+            "field_target_total": 35
+          },
+          "SLOW_DRIFT": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 70,
+            "field_target_total": 70
+          },
+          "TELEPORTATION": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 35,
+            "field_target_total": 35
+          },
+          "TIMESTAMP_SHIFT": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 35,
+            "field_target_total": 35
+          },
+          "VESSEL_MISMATCH": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 35,
+            "field_target_total": 35
+          }
+        },
+        "by_status": {
+          "ORIGINAL": {
+            "status_accuracy": {
+              "mean": null,
+              "std": null
+            },
+            "field_accuracy": {
+              "mean": null,
+              "std": null
+            },
+            "field_coverage": {
+              "mean": null,
+              "std": null
+            },
+            "support_total": 5685,
+            "attack_support_total": 0,
+            "field_support_total": 0,
+            "field_target_total": 0
+          },
+          "REMOVED": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": null,
+              "std": null
+            },
+            "field_coverage": {
+              "mean": null,
+              "std": null
+            },
+            "support_total": 105,
+            "attack_support_total": 105,
+            "field_support_total": 0,
+            "field_target_total": 0
+          },
+          "REPAIRED": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "support_total": 280,
+            "attack_support_total": 280,
+            "field_support_total": 385,
+            "field_target_total": 385
+          },
+          "UNRECOVERABLE": {
+            "status_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_accuracy": {
+              "mean": 1.0,
+              "std": 0.0
+            },
+            "field_coverage": {
+              "mean": 0.8095,
+              "std": 0.0
+            },
+            "support_total": 35,
+            "attack_support_total": 35,
+            "field_support_total": 595,
+            "field_target_total": 735
+          }
+        }
+      },
+      "per_attack": {
+        "MODIFIED_VALUE": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "DELETED": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "DUPLICATE_EXACT": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "DUPLICATE_NEAR": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "FABRICATED": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "TIMESTAMP_SHIFT": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "TELEPORTATION": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "PORT_SKIP": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "NEGATIVE_TRANSIT": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "RELATIONAL_ORPHAN": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "VESSEL_MISMATCH": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        },
+        "SLOW_DRIFT": {
+          "precision": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "recall": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "f1": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "support_total": 35
+        }
+      },
+      "type_confusion_matrix": {
+        "DELETED": {
+          "DELETED": 35,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "DUPLICATE_EXACT": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 35,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "DUPLICATE_NEAR": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 35,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "FABRICATED": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 35,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "MODIFIED_VALUE": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 35,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "NEGATIVE_TRANSIT": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 35,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "PORT_SKIP": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 35,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "RELATIONAL_ORPHAN": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 35,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "SLOW_DRIFT": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 35,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "TELEPORTATION": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 35,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 0
+        },
+        "TIMESTAMP_SHIFT": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 35,
+          "VESSEL_MISMATCH": 0
+        },
+        "VESSEL_MISMATCH": {
+          "DELETED": 0,
+          "DUPLICATE_EXACT": 0,
+          "DUPLICATE_NEAR": 0,
+          "FABRICATED": 0,
+          "MODIFIED_VALUE": 0,
+          "NEGATIVE_TRANSIT": 0,
+          "PORT_SKIP": 0,
+          "RELATIONAL_ORPHAN": 0,
+          "SLOW_DRIFT": 0,
+          "TELEPORTATION": 0,
+          "TIMESTAMP_SHIFT": 0,
+          "VESSEL_MISMATCH": 35
+        }
       }
-    ],
-    "type_accuracy": 1.0,
-    "type_log_loss": 0.006878,
-    "type_brier": 6.1e-05,
-    "type_top_label_ece": 0.006851,
-    "type_reliability": [
-      {
-        "count": 168,
-        "mean_predicted_probability": 0.993149,
-        "observed_frequency": 1.0
-      }
-    ]
+    },
+    "evaluation_scope": "Five fixed synthetic seeds excluded from the calibration study's training and evaluation seeds. The evaluator oracle is used only after detector and reconstruction output."
   },
-  "calibration_training_seeds": [
-    113,
-    401,
-    809,
-    1301
-  ],
-  "calibration_evaluation_seeds": [
-    1501,
-    1907
-  ]
+  "holdout_evaluation": {
+    "seed": 2291,
+    "record_count": 1200,
+    "attack_families": [
+      "LEDGER_FORK",
+      "WEIGHT_WITNESS_DRIFT",
+      "UNREGISTERED_EXTENSION_FIELD"
+    ],
+    "known_batch_attack_families": "none of the holdout family names appears in the batch attack catalog",
+    "holdout_detector_imports": "holdout generator is imported only by this evaluator and its package export",
+    "true_positive": 3,
+    "false_positive": 0,
+    "false_negative": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "unknown_type_accuracy": 1.0,
+    "reconstruction_rows": 1200,
+    "per_attack": {
+      "LEDGER_FORK": {
+        "detected": true,
+        "classified_unknown": true,
+        "detection_probability": 0.982774,
+        "evidence_codes": [
+          "EXPECTED_LEDGER_HASH_MISMATCH",
+          "LEDGER_PREVIOUS_HASH_MISMATCH"
+        ],
+        "reconstruction_status": "UNRECOVERABLE",
+        "explanation_present": true
+      },
+      "WEIGHT_WITNESS_DRIFT": {
+        "detected": true,
+        "classified_unknown": true,
+        "detection_probability": 0.980223,
+        "evidence_codes": [
+          "EXPECTED_PAYLOAD_HASH_MISMATCH"
+        ],
+        "reconstruction_status": "UNRECOVERABLE",
+        "explanation_present": true
+      },
+      "UNREGISTERED_EXTENSION_FIELD": {
+        "detected": true,
+        "classified_unknown": true,
+        "detection_probability": 0.323565,
+        "evidence_codes": [
+          "UNRECOGNIZED_SCHEMA_FIELD"
+        ],
+        "reconstruction_status": "UNRECOVERABLE",
+        "explanation_present": true
+      }
+    },
+    "evaluation_scope": "Three deterministic synthetic families held outside batch injection and calibration. This is a narrow open-set test, not generalization evidence for arbitrary attacks."
+  },
+  "calibration": {
+    "method": "standardized logistic regression; all attack labels are synthetic",
+    "training_seeds": [
+      113,
+      401,
+      809,
+      1301
+    ],
+    "evaluation_seeds": [
+      1501,
+      1907
+    ],
+    "record_count_per_seed": 1200,
+    "training_records": 4884,
+    "training_attacks": 336,
+    "feature_count": 44,
+    "type_classes": [
+      "DELETED",
+      "DUPLICATE_EXACT",
+      "DUPLICATE_NEAR",
+      "FABRICATED",
+      "MODIFIED_VALUE",
+      "NEGATIVE_TRANSIT",
+      "PORT_SKIP",
+      "RELATIONAL_ORPHAN",
+      "SLOW_DRIFT",
+      "TELEPORTATION",
+      "TIMESTAMP_SHIFT",
+      "VESSEL_MISMATCH"
+    ],
+    "evaluation": {
+      "by_seed": {
+        "1501": {
+          "record_support": 1221,
+          "attack_support": 84,
+          "detection_brier_raw": 9.9e-05,
+          "detection_brier_calibrated": 0.0,
+          "detection_ece_raw": 0.002351,
+          "detection_ece_calibrated": 9.3e-05,
+          "detection_reliability_raw": [
+            {
+              "count": 1137,
+              "mean_predicted_probability": 0.0,
+              "observed_frequency": 0.0
+            },
+            {
+              "count": 84,
+              "mean_predicted_probability": 0.965833,
+              "observed_frequency": 1.0
+            }
+          ],
+          "detection_reliability_calibrated": [
+            {
+              "count": 1137,
+              "mean_predicted_probability": 9.9e-05,
+              "observed_frequency": 0.0
+            },
+            {
+              "count": 84,
+              "mean_predicted_probability": 0.999997,
+              "observed_frequency": 1.0
+            }
+          ],
+          "type_accuracy": 1.0,
+          "type_log_loss": 0.006865,
+          "type_brier": 6.1e-05,
+          "type_top_label_ece": 0.006839,
+          "type_reliability": [
+            {
+              "count": 84,
+              "mean_predicted_probability": 0.993161,
+              "observed_frequency": 1.0
+            }
+          ]
+        },
+        "1907": {
+          "record_support": 1221,
+          "attack_support": 84,
+          "detection_brier_raw": 9.9e-05,
+          "detection_brier_calibrated": 0.0,
+          "detection_ece_raw": 0.002351,
+          "detection_ece_calibrated": 9.3e-05,
+          "detection_reliability_raw": [
+            {
+              "count": 1137,
+              "mean_predicted_probability": 0.0,
+              "observed_frequency": 0.0
+            },
+            {
+              "count": 84,
+              "mean_predicted_probability": 0.965833,
+              "observed_frequency": 1.0
+            }
+          ],
+          "detection_reliability_calibrated": [
+            {
+              "count": 1137,
+              "mean_predicted_probability": 9.9e-05,
+              "observed_frequency": 0.0
+            },
+            {
+              "count": 84,
+              "mean_predicted_probability": 0.999997,
+              "observed_frequency": 1.0
+            }
+          ],
+          "type_accuracy": 1.0,
+          "type_log_loss": 0.006891,
+          "type_brier": 6.1e-05,
+          "type_top_label_ece": 0.006864,
+          "type_reliability": [
+            {
+              "count": 84,
+              "mean_predicted_probability": 0.993136,
+              "observed_frequency": 1.0
+            }
+          ]
+        }
+      },
+      "detection_brier_raw": 9.9e-05,
+      "detection_brier_calibrated": 0.0,
+      "detection_ece_raw": 0.002351,
+      "detection_ece_calibrated": 9.3e-05,
+      "detection_reliability_raw": [
+        {
+          "count": 2274,
+          "mean_predicted_probability": 0.0,
+          "observed_frequency": 0.0
+        },
+        {
+          "count": 168,
+          "mean_predicted_probability": 0.965833,
+          "observed_frequency": 1.0
+        }
+      ],
+      "detection_reliability_calibrated": [
+        {
+          "count": 2274,
+          "mean_predicted_probability": 9.9e-05,
+          "observed_frequency": 0.0
+        },
+        {
+          "count": 168,
+          "mean_predicted_probability": 0.999997,
+          "observed_frequency": 1.0
+        }
+      ],
+      "type_accuracy": 1.0,
+      "type_log_loss": 0.006878,
+      "type_brier": 6.1e-05,
+      "type_top_label_ece": 0.006851,
+      "type_reliability": [
+        {
+          "count": 168,
+          "mean_predicted_probability": 0.993149,
+          "observed_frequency": 1.0
+        }
+      ]
+    }
+  },
+  "ablation": {
+    "seed": 1907,
+    "record_count": 1200,
+    "attack_families": [
+      "MODIFIED_VALUE",
+      "DELETED",
+      "DUPLICATE_EXACT",
+      "DUPLICATE_NEAR",
+      "FABRICATED",
+      "TIMESTAMP_SHIFT",
+      "TELEPORTATION",
+      "PORT_SKIP",
+      "NEGATIVE_TRANSIT",
+      "RELATIONAL_ORPHAN",
+      "VESSEL_MISMATCH",
+      "SLOW_DRIFT"
+    ],
+    "evaluation_scope": "One fixed synthetic seed; detector ablation is descriptive, not causal evidence.",
+    "results": {
+      "all_detectors": {
+        "removed_detector": null,
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 1.0,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_duplicate_detection": {
+        "removed_detector": "duplicate_detection",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 0.8333,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 0.0,
+          "DUPLICATE_NEAR": 0.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_integrity_hash": {
+        "removed_detector": "integrity_hash",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 1.0,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_control_ledger": {
+        "removed_detector": "control_ledger",
+        "enabled_detectors": [
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 77,
+        "false_positive": 0,
+        "false_negative": 7,
+        "precision": 1.0,
+        "recall": 0.9167,
+        "f1": 0.9565,
+        "type_accuracy": 0.9091,
+        "per_attack_recall": {
+          "DELETED": 0.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 0.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_relational_analysis": {
+        "removed_detector": "relational_analysis",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 0.7143,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 0.5714,
+          "RELATIONAL_ORPHAN": 0.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 0.0,
+          "VESSEL_MISMATCH": 0.0
+        }
+      },
+      "without_route_validation": {
+        "removed_detector": "route_validation",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 1.0,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_temporal_analysis": {
+        "removed_detector": "temporal_analysis",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 0.9167,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 0.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_movement_history": {
+        "removed_detector": "movement_history",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 1.0,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_customs_witness": {
+        "removed_detector": "customs_witness",
+        "enabled_detectors": [
+          "control_ledger",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "schema_novelty",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 1.0,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      },
+      "without_schema_novelty": {
+        "removed_detector": "schema_novelty",
+        "enabled_detectors": [
+          "control_ledger",
+          "customs_witness",
+          "duplicate_detection",
+          "integrity_hash",
+          "movement_history",
+          "relational_analysis",
+          "route_validation",
+          "temporal_analysis"
+        ],
+        "true_positive": 84,
+        "false_positive": 0,
+        "false_negative": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "type_accuracy": 1.0,
+        "per_attack_recall": {
+          "DELETED": 1.0,
+          "DUPLICATE_EXACT": 1.0,
+          "DUPLICATE_NEAR": 1.0,
+          "FABRICATED": 1.0,
+          "MODIFIED_VALUE": 1.0,
+          "NEGATIVE_TRANSIT": 1.0,
+          "PORT_SKIP": 1.0,
+          "RELATIONAL_ORPHAN": 1.0,
+          "SLOW_DRIFT": 1.0,
+          "TELEPORTATION": 1.0,
+          "TIMESTAMP_SHIFT": 1.0,
+          "VESSEL_MISMATCH": 1.0
+        }
+      }
+    }
+  },
+  "regression_targets": {
+    "known_precision": 0.95,
+    "known_recall": 0.95,
+    "known_f1": 0.95,
+    "known_type_accuracy": 0.9,
+    "reconstruction_status_accuracy": 0.95,
+    "reconstruction_field_accuracy": 0.98,
+    "reconstruction_field_coverage": 0.8
+  }
 }

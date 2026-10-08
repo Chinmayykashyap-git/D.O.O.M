@@ -1,0 +1,53 @@
+{
+  "seed": 2291,
+  "record_count": 1200,
+  "attack_families": [
+    "LEDGER_FORK",
+    "WEIGHT_WITNESS_DRIFT",
+    "UNREGISTERED_EXTENSION_FIELD"
+  ],
+  "known_batch_attack_families": "none of the holdout family names appears in the batch attack catalog",
+  "holdout_detector_imports": "holdout generator is imported only by this evaluator and its package export",
+  "true_positive": 3,
+  "false_positive": 0,
+  "false_negative": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "unknown_type_accuracy": 1.0,
+  "reconstruction_rows": 1200,
+  "per_attack": {
+    "LEDGER_FORK": {
+      "detected": true,
+      "classified_unknown": true,
+      "detection_probability": 0.982774,
+      "evidence_codes": [
+        "EXPECTED_LEDGER_HASH_MISMATCH",
+        "LEDGER_PREVIOUS_HASH_MISMATCH"
+      ],
+      "reconstruction_status": "UNRECOVERABLE",
+      "explanation_present": true
+    },
+    "WEIGHT_WITNESS_DRIFT": {
+      "detected": true,
+      "classified_unknown": true,
+      "detection_probability": 0.980223,
+      "evidence_codes": [
+        "EXPECTED_PAYLOAD_HASH_MISMATCH"
+      ],
+      "reconstruction_status": "UNRECOVERABLE",
+      "explanation_present": true
+    },
+    "UNREGISTERED_EXTENSION_FIELD": {
+      "detected": true,
+      "classified_unknown": true,
+      "detection_probability": 0.323565,
+      "evidence_codes": [
+        "UNRECOGNIZED_SCHEMA_FIELD"
+      ],
+      "reconstruction_status": "UNRECOVERABLE",
+      "explanation_present": true
+    }
+  },
+  "evaluation_scope": "Three deterministic synthetic families held outside batch injection and calibration. This is a narrow open-set test, not generalization evidence for arbitrary attacks."
+}

@@ -330,6 +330,39 @@ def test_ablation_report_shows_control_ledger_contribution():
     assert without_ledger["recall"] < full["recall"]
 
 
+def test_multiseed_metrics_meet_regression_targets_without_seed_leakage():
+    root = Path(__file__).resolve().parents[1]
+    metrics = json.loads((root / "reports" / "metrics.json").read_text(encoding="utf-8"))
+    known = metrics["known_evaluation"]
+    calibration = metrics["calibration"]
+    targets = metrics["regression_targets"]
+    aggregate = known["aggregate"]
+
+    assert len(known["seeds"]) >= 5
+    assert len(set(known["seeds"])) == len(known["seeds"])
+    assert set(known["seeds"]).isdisjoint(calibration["training_seeds"])
+    assert set(known["seeds"]).isdisjoint(calibration["evaluation_seeds"])
+    measured = {
+        "known_precision": aggregate["precision_recall_f1"]["precision"]["mean"],
+        "known_recall": aggregate["precision_recall_f1"]["recall"]["mean"],
+        "known_f1": aggregate["precision_recall_f1"]["f1"]["mean"],
+        "known_type_accuracy": aggregate["type_accuracy"]["mean"],
+        "reconstruction_status_accuracy": aggregate["reconstruction"]["status_accuracy"]["mean"],
+        "reconstruction_field_accuracy": aggregate["reconstruction"]["field_accuracy"]["mean"],
+        "reconstruction_field_coverage": aggregate["reconstruction"]["field_coverage"]["mean"],
+    }
+    assert set(measured) == set(targets)
+    assert all(measured[name] >= floor for name, floor in targets.items())
+    holdout = metrics["holdout_evaluation"]
+    assert set(holdout["attack_families"]).isdisjoint(ATTACK_TYPES)
+    assert holdout["true_positive"] + holdout["false_negative"] == len(
+        holdout["attack_families"]
+    )
+    assert all(result["classified_unknown"] for result in holdout["per_attack"].values())
+    assert (root / "reports" / "EVAL.md").exists()
+    assert (root / "TARGETS.md").exists()
+
+
 def test_api_evidence_reconstruction_and_oracle_db_isolation(tmp_path):
     clean, witnesses, observed, oracle, ledger = generated(120, 113)
     incidents = apply_calibration(
