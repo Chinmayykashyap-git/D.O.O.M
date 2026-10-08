@@ -32,4 +32,4 @@ Implement the focused Phase 7 screens and interactions, then Phase 5 bounded str
 | 4 | `be2a113` |
 | 6 | `baf4fe6` |
 | 3 | `7f0a9a0` |
-| 8 | pending |
+| 8 | `331f102` |
