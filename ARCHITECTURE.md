@@ -49,8 +49,9 @@ Simulated live feed ──> bounded event history + incremental detector
   does not generate holdout examples.
 - `doom.store`: local SQLite operator evidence database with no ground-truth
   table.
-- `doom.streaming`: in-process event ingestion, bounded recent-event history,
-  incremental detector call, and WebSocket fan-out.
+- `doom.streaming`: bounded first-observation snapshots, per-event invariant
+  checks, stream-only record-ID mutation detection, provisional live
+  reconstruction, deterministic fast replay, and measured local performance.
 - `doom.api`: local FastAPI read API, incident detail, and WebSocket endpoint.
 - `frontend`: Vite/React/TypeScript operator console with API-backed overview,
   filterable/sortable incident register, case forensics, and live unknown-event

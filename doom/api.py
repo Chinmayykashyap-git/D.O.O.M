@@ -143,6 +143,9 @@ def create_app(
     @app.websocket("/api/stream")
     async def stream_socket(websocket: WebSocket) -> None:
         await websocket.accept()
+        if len(stream.clients) >= stream.client_limit:
+            await websocket.close(code=1013, reason="Live stream client capacity reached.")
+            return
         queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue(maxsize=100)
         stream.clients.add(queue)
         try:

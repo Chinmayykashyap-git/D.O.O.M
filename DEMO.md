@@ -23,8 +23,13 @@ synthetic witnesses, control ledger, oracle fixture, detector findings,
 reconstruction decisions, and per-run metrics; it replaces prior batch data
 instead of appending duplicate rows. It persists operator evidence, starts the
 API/dashboard on loopback, and starts the simulated stream. The third simulated
-event introduces an unknown schema extension and should appear as `UNKNOWN
-ANOMALY`. Use **Ctrl+C** to stop the server.
+event reuses the first record ID with a changed container identity; the
+incremental detector raises `UNKNOWN ANOMALY` and shows a provisional
+restoration to the first observed snapshot. The basis is explicitly not
+authenticated external evidence. Use **Ctrl+C** to stop the server.
+
+If port `8000` is occupied, set `DOOM_API_PORT` to an available loopback port
+before starting; update the browser/API URLs in this runbook to match.
 
 To evaluate without launching a server:
 
@@ -41,6 +46,12 @@ Replay that recording without services:
 
 The replay command fails clearly if the recording is missing, incomplete, or
 does not contain the expected unknown event.
+
+Exercise a deterministic stream directly, without the batch demo:
+
+```powershell
+python -m doom.streaming --events 10 --seed 83 --fast
+```
 
 ## Evaluation and gates
 

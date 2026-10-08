@@ -15,6 +15,10 @@ duplicating metrics that can become stale.
   general open-set precision or recall claim.
 - The unknown novelty score is a fixed Jaccard distance over evidence-code
   signatures. It is not a learned or broad semantic novelty model.
+- A streaming record-ID mutation is reconstructed only to the first observation
+  that passed the available per-record checks. That snapshot is provisional,
+  not an authenticated independent witness; uncorroborated anomalies remain
+  `UNRECOVERABLE`.
 - Synthetic operational witnesses are generated locally and are not signed or
   authenticated external carrier, customs, vessel, or port feeds.
 - The control ledger is an assumed independent anchor, not a cryptographic
@@ -37,10 +41,11 @@ duplicating metrics that can become stale.
 - The stream is a local simulation with in-process detector and bounded recent
   event/client-queue state, SQLite event history, and WebSocket fan-out. It is
   not a durable distributed ingestion service.
-- Per-event latency and throughput are not yet recorded in
-  `reports/metrics.json`; Phase 5 must add measured streaming metrics before
-  making performance claims.
-- Out-of-order and late-event handling are not implemented.
+- Per-event latency and throughput in `reports/metrics.json` are single-host,
+  in-process synthetic microbenchmark results that include detection, SQLite
+  persistence, and bounded fan-out. They are not production capacity claims.
+- Out-of-order and late-event handling are not implemented; events are
+  evaluated in arrival order and this limitation is explicitly retained.
 - Authentication, authorization, multi-user controls, production secret
   management, external data integration, and high availability are outside the
   local demo's scope.

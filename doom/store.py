@@ -163,11 +163,22 @@ class EvidenceStore:
             ).fetchone()
         return json.loads(row["value"]) if row else {}
 
-    def add_stream_event(self, event: dict[str, Any]) -> None:
+    def add_stream_event(self, event: dict[str, Any], limit: int = 1000) -> None:
+        if limit < 1:
+            raise ValueError("stream event retention limit must be positive")
         with self.connect() as connection:
             connection.execute(
                 "INSERT INTO stream_events(created_at,payload) VALUES(?,?)",
                 (event["timestamp"], json.dumps(_json_safe(event))),
+            )
+            connection.execute(
+                """
+                DELETE FROM stream_events
+                WHERE event_id NOT IN (
+                    SELECT event_id FROM stream_events ORDER BY event_id DESC LIMIT ?
+                )
+                """,
+                (limit,),
             )
 
     def stream_events(self, limit: int = 100) -> list[dict[str, Any]]:

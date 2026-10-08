@@ -281,7 +281,48 @@ def test_unknown_stream_schema_attack_is_not_a_batch_training_import(tmp_path):
     assert event["incident"]["unknown_analysis"]["invariant_violations"]
     assert 0 <= event["incident"]["unknown_analysis"]["novelty_score"] <= 1
     assert event["incident"]["unknown_analysis"]["nearest_known_attack_type"] in ATTACK_TYPES
+    assert event["live_reconstruction"]["status"] == "UNRECOVERABLE"
     assert not any(item["record_id"] == row["record_id"] for item in batch_incidents)
+
+
+def test_live_stream_detects_and_provisionally_repairs_stream_only_record_mutation(tmp_path):
+    store = EvidenceStore(tmp_path / "stream-mutation.sqlite3")
+    service = StreamingService(store, memory_limit=5, persistence_limit=7)
+    events, latencies, elapsed = asyncio.run(
+        service.replay_seeded(event_count=12, seed=83001, fast=True)
+    )
+
+    mutation = events[2]
+    assert mutation["status"] == "ANOMALY"
+    assert mutation["incident"]["tampering_type"] == "UNKNOWN ANOMALY"
+    assert mutation["incident"]["evidence"][0]["evidence_code"] == "STREAM_RECORD_ID_MUTATION"
+    assert mutation["live_reconstruction"]["status"] == "REPAIRED"
+    assert mutation["live_reconstruction"]["provisional"] is True
+    assert mutation["live_reconstruction"]["reconstructed_record"]["container_id"] == (
+        events[0]["record"]["container_id"]
+    )
+    assert len(service.recent) == 5
+    assert len(service._trusted_first_observation) <= 5
+    assert len(store.stream_events(100)) == 7
+    assert len(latencies) == len(events) == 12
+    assert elapsed > 0
+
+    assert "STREAM_RECORD_ID_MUTATION" not in set(ATTACK_TYPES)
+    assert ManifestDetector().detect(pd.DataFrame([mutation["record"]])) == []
+
+
+def test_fast_stream_replay_is_deterministic(tmp_path):
+    async def replay(path):
+        return await StreamingService(EvidenceStore(path)).replay_seeded(
+            event_count=5, seed=9921, fast=True
+        )
+
+    first_events, _, _ = asyncio.run(replay(tmp_path / "first.sqlite3"))
+    second_events, _, _ = asyncio.run(replay(tmp_path / "second.sqlite3"))
+    assert first_events == second_events
+    assert [event["status"] for event in first_events] == [
+        "CLEARED", "CLEARED", "ANOMALY", "CLEARED", "CLEARED",
+    ]
 
 
 def test_holdout_families_are_isolated_and_explain_novelty():
@@ -398,6 +439,12 @@ def test_multiseed_metrics_meet_regression_targets_without_seed_leakage():
     }
     assert set(measured) == set(targets)
     assert all(measured[name] >= floor for name, floor in targets.items())
+    stream = metrics["streaming"]
+    assert stream["event_count"] >= 3
+    assert stream["unknown_anomaly_count"] >= 1
+    assert stream["latency_ms"]["p50"] > 0
+    assert stream["latency_ms"]["p95"] >= stream["latency_ms"]["p50"]
+    assert stream["throughput_events_per_second"] > 0
     holdout = metrics["holdout_evaluation"]
     assert set(holdout["attack_families"]).isdisjoint(ATTACK_TYPES)
     assert holdout["true_positive"] + holdout["false_negative"] == len(

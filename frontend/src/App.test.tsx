@@ -185,10 +185,10 @@ describe("D.O.O.M. operations console", () => {
       tampering_type: "UNKNOWN ANOMALY",
       unknown_analysis: {
         invariant_violations: [{
-          detector_id: "schema_novelty",
-          evidence_code: "UNRECOGNIZED_SCHEMA_FIELD",
-          field: "schema",
-          explanation: "An unknown extension field was observed.",
+          detector_id: "stream_sequence",
+          evidence_code: "STREAM_RECORD_ID_MUTATION",
+          field: "container_id",
+          explanation: "A previously observed record ID reappeared with changed identity.",
         }],
         nearest_known_attack_type: "DELETED",
         nearest_similarity: 0,
@@ -203,6 +203,15 @@ describe("D.O.O.M. operations console", () => {
       status: "ANOMALY",
       incident: liveIncident,
       record: {},
+      live_reconstruction: {
+        record_id: liveIncident.record_id,
+        status: "REPAIRED",
+        explanation: "The changed field is restored to a previously observed snapshot.",
+        changes: [{ field: "container_id", from: "SWAPPED-CONT-101", to: "CONT-101" }],
+        tampering_type: "UNKNOWN ANOMALY",
+        method: "first_observed_stream_snapshot",
+        provisional: true,
+      },
     };
     const socket = TestWebSocket.instances[0];
     if (!socket?.onmessage) throw new Error("WebSocket message handler was not attached.");
@@ -213,6 +222,9 @@ describe("D.O.O.M. operations console", () => {
     expect(screen.queryByText("NOVELTY MONITOR ARMED")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "INSPECT" }));
     expect(await screen.findByText("UNKNOWN ANOMALY ANALYSIS")).toBeInTheDocument();
-    expect(screen.getByText("UNRECOGNIZED SCHEMA FIELD")).toBeInTheDocument();
+    expect(screen.getByText("STREAM RECORD ID MUTATION")).toBeInTheDocument();
+    expect(screen.getByText("PROVISIONAL — FIRST OBSERVED STREAM SNAPSHOT")).toBeInTheDocument();
+    expect(screen.getByText("SWAPPED-CONT-101")).toBeInTheDocument();
+    expect(screen.getByText("CONT-101")).toBeInTheDocument();
   });
 });

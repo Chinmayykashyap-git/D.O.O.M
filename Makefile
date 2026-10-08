@@ -25,7 +25,9 @@ verify: eval frontend
 	python -m ruff check doom holdout_attacks tests
 	python -m mypy doom holdout_attacks
 	npm --prefix frontend test
+	python -m doom.streaming --events 12 --seed 83 --fast --summary-only
 	python -m doom.demo --no-server
+	python -m doom.offline_demo
 	python -m pytest
 	python -m doom.e2e
 	python -m pytest -k detector_import_graph

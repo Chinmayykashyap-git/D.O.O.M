@@ -450,6 +450,10 @@ class ManifestDetector:
         return found[0] if found else None
 
     @staticmethod
+    def analyze_unknown(evidence: list[dict[str, Any]]) -> dict[str, Any]:
+        return _unknown_analysis(evidence)
+
+    @staticmethod
     def _records(value: Any) -> list[dict[str, Any]]:
         if value is None:
             return []

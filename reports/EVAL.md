@@ -107,6 +107,15 @@ The calibration curve and one-factor ablation below are reused from the Phase 2 
 | without_customs_witness | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
 | without_schema_novelty | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
 
+## Streaming performance
+
+Measured 200 local events at 82.890 events/second; p50 latency 9.215 ms, p95 latency 10.249 ms, and maximum 12.698 ms. The run raised 1 streaming unknown anomaly.
+
+Measured in-process publish duration including per-record detection, SQLite persistence, and bounded in-memory fan-out; includes event creation overhead.
+
+These are single-host synthetic microbenchmark measurements, not a production throughput guarantee.
+
+
 ## Isolated holdout attacks
 
 Recall: 1.0000 (3 TP, 0 FN); precision: 1.0000 (0 FP). Three deterministic synthetic families held outside batch injection and calibration. This is a narrow open-set test, not generalization evidence for arbitrary attacks.
@@ -125,5 +134,6 @@ A similarity of 0.0000 means no evidence-signature overlap; the displayed neares
 - A deleted record cannot be fully restored when independent sources do not attest every field; the system deliberately leaves such rows `UNRECOVERABLE` and reports partial coverage.
 - Novel schema evidence can yield a low calibrated probability even when rule-based handling raises an unknown anomaly; probability estimates and alert policy are not interchangeable.
 - Synthetic witnesses are generated with the manifest and are not authenticated external carrier, customs, or port systems.
+- Streaming performance covers only 200 local events and 1 stream-only unknown anomaly; latency and throughput are single-host measurements, not capacity guarantees.
 
 Reproduce this report with `python -m doom.evaluation` (or `make eval` once the project targets are installed).

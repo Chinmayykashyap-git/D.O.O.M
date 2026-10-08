@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import statistics
 from pathlib import Path
@@ -14,6 +15,7 @@ from doom.detectors import ManifestDetector
 from doom.generator import generate_dataset, make_control_ledger
 from doom.metrics import evaluate_detection
 from doom.reconstruction import reconstruct_manifest
+from doom.streaming import measure_streaming
 
 ROOT = Path(__file__).resolve().parent.parent
 EVALUATION_SEEDS = (19, 41, 75, 2222, 31415)
@@ -273,6 +275,24 @@ def _make_eval_markdown(metrics: dict[str, Any]) -> str:
             f"| {values['f1']:.4f} | {values['type_accuracy']:.4f} |"
         )
 
+    stream = metrics["streaming"]
+    lines.extend([
+        "",
+        "## Streaming performance",
+        "",
+        f"Measured {stream['event_count']} local events at "
+        f"{stream['throughput_events_per_second']:.3f} events/second; "
+        f"p50 latency {stream['latency_ms']['p50']:.3f} ms, "
+        f"p95 latency {stream['latency_ms']['p95']:.3f} ms, and maximum "
+        f"{stream['latency_ms']['max']:.3f} ms. The run raised "
+        f"{stream['unknown_anomaly_count']} streaming unknown anomaly.",
+        "",
+        stream["measurement"],
+        "",
+        "These are single-host synthetic microbenchmark measurements, not a production throughput guarantee.",
+        "",
+    ])
+
     holdout = metrics["holdout_evaluation"]
     lines.extend([
         "",
@@ -313,6 +333,9 @@ def _make_eval_markdown(metrics: dict[str, Any]) -> str:
         "raises an unknown anomaly; probability estimates and alert policy are not interchangeable.",
         "- Synthetic witnesses are generated with the manifest and are not authenticated external carrier, "
         "customs, or port systems.",
+        f"- Streaming performance covers only {stream['event_count']} local events and "
+        f"{stream['unknown_anomaly_count']} stream-only unknown anomaly; latency and throughput are "
+        "single-host measurements, not capacity guarantees.",
         "",
         "Reproduce this report with `python -m doom.evaluation` (or `make eval` once the project targets "
         "are installed).",
@@ -405,6 +428,7 @@ def run_evaluation(
         "holdout_evaluation": holdout,
         "calibration": calibration,
         "ablation": ablation,
+        "streaming": asyncio.run(measure_streaming()),
         "regression_targets": REGRESSION_TARGETS,
     }
     metrics_path = ROOT / "reports" / "metrics.json"

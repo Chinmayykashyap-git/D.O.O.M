@@ -98,13 +98,8 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
 async def exercise_stream() -> dict:
     store = EvidenceStore(DATA_DIR / "doom.sqlite3")
     stream = StreamingService(store)
-    from doom.generator import generate_clean_manifest
-    row = generate_clean_manifest(1, seed=83001).iloc[0].to_dict()
-    row["record_id"] = "MF-8300001"
-    row["policy_epoch"] = "OMEGA-7"
-    row["routing_signature"] = "UNSEEN-FUTURE-FORMAT"
-    event = await stream.publish(row)
-    return event
+    events, _, _ = await stream.replay_seeded(event_count=3, seed=83001, fast=True)
+    return events[-1]
 
 
 def _assert_local_port_available(host: str, port: int) -> None:
@@ -211,6 +206,7 @@ def main() -> None:
             "status": event["status"],
             "tampering_type": (event["incident"] or {}).get("tampering_type"),
             "evidence": (event["incident"] or {}).get("evidence"),
+            "live_reconstruction": event["live_reconstruction"],
         }, indent=2))
     else:
         serve()

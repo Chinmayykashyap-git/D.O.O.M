@@ -3536,6 +3536,23 @@
       }
     }
   },
+  "streaming": {
+    "event_count": 200,
+    "unknown_anomaly_count": 1,
+    "throughput_events_per_second": 82.89,
+    "latency_ms": {
+      "p50": 9.215,
+      "p95": 10.249,
+      "max": 12.698
+    },
+    "measurement": "Measured in-process publish duration including per-record detection, SQLite persistence, and bounded in-memory fan-out; includes event creation overhead.",
+    "state_limits": {
+      "recent_events": 100,
+      "trusted_record_snapshots": 100,
+      "persisted_events": 200,
+      "websocket_clients": 32
+    }
+  },
   "regression_targets": {
     "known_precision": 0.95,
     "known_recall": 0.95,

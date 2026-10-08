@@ -30,9 +30,14 @@ python -m doom.demo
 
 The demo deterministically regenerates its batch artifacts, evaluates them,
 persists evidence locally, starts the API on `127.0.0.1:8000`, opens the
-dashboard, and produces a streaming-only unknown-schema alert. Stop the server
+dashboard, and produces a streaming-only repeated-record mutation alert with
+provisional first-observation reconstruction. Stop the server
 with **Ctrl+C**. A busy port or missing runtime dependency is reported as an
 error; the app does not silently choose another port.
+
+If the default port is occupied, select another local port explicitly, for
+example `$env:DOOM_API_PORT = "18001"` in PowerShell. The demo still fails
+rather than changing ports on its own.
 
 ## Verify and evaluate
 
@@ -78,6 +83,12 @@ batch size or seed for a fresh local run:
 
 ```powershell
 python -m doom.demo --records 5000 --seed 1907 --no-server
+```
+
+Run a deterministic, no-delay stream replay independently:
+
+```powershell
+python -m doom.streaming --events 10 --seed 83 --fast
 ```
 
 ## Development

@@ -68,13 +68,18 @@ signed; an attacker able to replace both data and ledger can defeat the
 assumption. Novelty is a fixed evidence-signature distance rather than a
 learned general-purpose novelty detector.
 
-The live feed is in-process with bounded recent-event and client-queue state,
-SQLite event history, and WebSocket fan-out. It has no external broker,
+The live feed is in-process with bounded recent-event, first-observation, and
+client-queue state, bounded SQLite event history, and WebSocket fan-out. A
+repeated record ID with changed fields is detected as an unknown stream-only
+invariant violation. It is provisionally reconstructed to the first observed
+event only if that event passed the available checks; this is not an
+authenticated external witness. The service has no external broker,
 distributed state, authenticated producer, durable queue guarantee, or
 high-availability behavior. For measured latency/throughput and skipped event
-semantics, see [`LIMITATIONS.md`](./LIMITATIONS.md) and the corresponding
-stream metrics in the evaluation report when present.
+semantics, see [`LIMITATIONS.md`](./LIMITATIONS.md) and the stream metrics in
+the evaluation report.
 
 The operator UI reads the local API for its overview, incident register, batch
 case detail, and stream events. A streaming-only incident can be inspected from
-its WebSocket evidence but does not claim a batch reconstruction decision.
+its WebSocket evidence and live reconstruction decision, including explicit
+provisional status when based on the first observed snapshot.

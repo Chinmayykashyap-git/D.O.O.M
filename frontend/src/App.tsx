@@ -76,12 +76,13 @@ type ReconstructionDecision = {
   record_id: string;
   status: ReconstructionStatus;
   explanation: string;
-  changes: { field: string; from: string; to: string }[];
+  changes: { field: string; from: unknown; to: unknown }[];
   tampering_type: string | null;
   method?: string;
   evidence_relied_on?: string[];
   unresolved_fields?: string[];
   confidence?: number;
+  provisional?: boolean;
 };
 
 type RecordRow = Record<string, string | number | null>;
@@ -98,10 +99,12 @@ type IncidentDetail = {
 type LiveEvent = {
   event_id: string;
   timestamp: string;
+  sequence?: number;
   record_id: string;
   status: "ANOMALY" | "CLEARED";
   incident: Incident | null;
   record: RecordRow;
+  live_reconstruction?: ReconstructionDecision;
 };
 
 const NAV: { id: Screen; label: string; detail: string; icon: typeof Activity }[] = [
@@ -264,10 +267,13 @@ export default function App() {
       setDetail({
         incident: selectedLiveEvent.incident,
         record: selectedLiveEvent.record,
-        reconstruction: null,
+        reconstruction: selectedLiveEvent.live_reconstruction ?? null,
         timeline: [
           { event: "LIVE EVENT RECEIVED", time: selectedLiveEvent.timestamp },
           { event: "ANOMALY DETECTED", time: selectedLiveEvent.timestamp },
+          ...(selectedLiveEvent.live_reconstruction
+            ? [{ event: "LIVE RECONSTRUCTION DECIDED", time: selectedLiveEvent.timestamp }]
+            : []),
         ],
       });
       setDetailError(null);
@@ -845,9 +851,10 @@ function CaseEvidence({
           <div className="decision-body">
             <div className="decision-status"><StatusBadge value={decision.status} /><span>{decision.method ? humanize(decision.method) : "WITNESS-BACKED DECISION"}</span></div>
             <p>{decision.explanation}</p>
+            {decision.provisional && <p className="unresolved-fields">PROVISIONAL — FIRST OBSERVED STREAM SNAPSHOT</p>}
             {decision.changes.length ? (
               <div className="diff-list">{decision.changes.map((change) => (
-                <div className="diff-row" key={change.field}><b>{humanize(change.field)}</b><span>{change.from || "∅"}</span><ArrowDown size={14} /><strong>{change.to || "∅"}</strong></div>
+                <div className="diff-row" key={change.field}><b>{humanize(change.field)}</b><span>{displayValue(change.from)}</span><ArrowDown size={14} /><strong>{displayValue(change.to)}</strong></div>
               ))}</div>
             ) : <div className="no-diff">No field mutation recorded.</div>}
             {decision.unresolved_fields?.length ? <p className="unresolved-fields">UNRESOLVED: {decision.unresolved_fields.join(", ")}</p> : null}

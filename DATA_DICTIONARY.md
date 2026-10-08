@@ -42,7 +42,7 @@ not part of the registered batch manifest schema.
 | `oracle/attack_truth.sqlite3` | Attack labels and original values for evaluation. | Evaluator only; never detector/API/UI input. |
 | `../reports/calibration.json` | Seed-separated logistic calibration model and reliability/type measurements. | Synthetic training/evaluation data; not holdout data. |
 | `../reports/ablation.json` | One-factor detector ablation measurements. | Synthetic diagnostic; not a real-world benchmark. |
-| `../reports/metrics.json` | Multi-seed known, isolated holdout, calibration, ablation, and regression-target measurements. | Machine-readable evaluation source of truth. |
+| `../reports/metrics.json` | Multi-seed known, isolated holdout, calibration, ablation, streaming performance, and regression-target measurements. | Machine-readable evaluation source of truth. |
 | `../reports/EVAL.md` | Human-readable rendering of the measured evaluation report. | Generated from evaluation artifacts. |
 | `demo-run.json` | Latest one-run metrics snapshot. | Synthetic local demonstration output. |
 | `../reports/demo-offline-run.json` | Recorded metrics and live unknown event used by offline replay. | Synthetic demonstration fixture; not used for detector training. |
@@ -61,6 +61,18 @@ findings retain `UNKNOWN ANOMALY` and include invariant violations,
 nearest-known evidence-signature similarity, and novelty score. A zero-overlap
 nearest category is a deterministic tie-break, not a semantic attribution.
 
+## Live event and reconstruction
+
+Each WebSocket event includes its sequence, observed record, optional incident,
+and a live reconstruction decision. A repeated record ID with changed fields
+within the retained window is an `UNKNOWN ANOMALY`; if the first observed event
+passed available checks, changed fields are provisionally restored from that
+snapshot. The explanation marks that basis as untrusted external evidence.
+Other anomalies without an independent live witness remain `UNRECOVERABLE`.
+Event history, recent events, client queues, and first-observation snapshots
+have explicit finite retention limits, including a capped concurrent WebSocket
+client count.
+
 ## Reconstruction decision
 
 Each decision includes the record identifier, disposition, method, relied-on
@@ -74,5 +86,5 @@ payload is added to the reconstructed manifest without independent evidence.
 `reports/metrics.json` is the numeric source of truth for aggregate and
 per-attack precision/recall/F1, confusion counts, reconstruction status/field
 accuracy and coverage, calibration, ablations, isolated holdout measurements,
-and regression floors. These values are synthetic observations, not production
-performance estimates.
+stream latency/throughput, and regression floors. Stream performance measures
+are synthetic single-host observations, not production capacity estimates.
