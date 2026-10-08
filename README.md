@@ -53,10 +53,11 @@ make e2e
 ```
 
 `verify` runs the multi-seed known and isolated holdout evaluation, frontend
-TypeScript/production build, Ruff, mypy, offline demo, full pytest suite, live
-HTTP E2E, and explicit leakage/isolation/metric regression checks. The
-authoritative measured metrics are in [`reports/metrics.json`](./reports/metrics.json)
-and the rendered tables and scope notes are in [`reports/EVAL.md`](./reports/EVAL.md).
+TypeScript/production build and Vitest interaction tests, Ruff, mypy, offline
+demo, full pytest suite, live HTTP E2E, and explicit leakage/isolation/metric
+regression checks. The authoritative measured metrics are in
+[`reports/metrics.json`](./reports/metrics.json) and the rendered tables and
+scope notes are in [`reports/EVAL.md`](./reports/EVAL.md).
 
 ## Offline fallback
 
@@ -111,6 +112,19 @@ present or ledger-expected record receives an explicit `ORIGINAL`, `REPAIRED`,
 `REMOVED`, or `UNRECOVERABLE` disposition. A partial recovery does not become a
 complete repair when independent evidence cannot establish every required
 field.
+
+## Operator screens
+
+- **Overview:** API-backed manifest integrity seal, threat posture,
+  reconstruction summary, and prioritized incident snapshot.
+- **Incidents:** search, type/severity filters, and risk/confidence/type/record
+  sorting.
+- **Record forensics:** one case view for detector evidence, expected versus
+  observed values, scores, counterfactual, source fields, related records,
+  timeline, and explicit reconstruction diff/status.
+- **Live watch:** WebSocket events and unknown-anomaly explanations. A live
+  anomaly opens with its event evidence; a batch reconstruction outcome is not
+  invented when none exists.
 
 ## Project documentation
 

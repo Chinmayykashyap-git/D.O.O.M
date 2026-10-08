@@ -24,6 +24,7 @@ e2e: frontend
 verify: eval frontend
 	python -m ruff check doom holdout_attacks tests
 	python -m mypy doom holdout_attacks
+	npm --prefix frontend test
 	python -m doom.demo --no-server
 	python -m pytest
 	python -m doom.e2e

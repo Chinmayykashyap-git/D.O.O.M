@@ -74,3 +74,7 @@ distributed state, authenticated producer, durable queue guarantee, or
 high-availability behavior. For measured latency/throughput and skipped event
 semantics, see [`LIMITATIONS.md`](./LIMITATIONS.md) and the corresponding
 stream metrics in the evaluation report when present.
+
+The operator UI reads the local API for its overview, incident register, batch
+case detail, and stream events. A streaming-only incident can be inspected from
+its WebSocket evidence but does not claim a batch reconstruction decision.

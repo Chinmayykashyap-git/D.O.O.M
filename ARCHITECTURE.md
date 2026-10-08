@@ -52,7 +52,9 @@ Simulated live feed ──> bounded event history + incremental detector
 - `doom.streaming`: in-process event ingestion, bounded recent-event history,
   incremental detector call, and WebSocket fan-out.
 - `doom.api`: local FastAPI read API, incident detail, and WebSocket endpoint.
-- `frontend`: Vite/React/TypeScript operator console.
+- `frontend`: Vite/React/TypeScript operator console with API-backed overview,
+  filterable/sortable incident register, case forensics, and live unknown-event
+  views.
 - `doom.demo`: generate → corrupt → detect → reconstruct → evaluate → persist →
   serve dashboard and simulated stream.
 - `doom.e2e`: starts a temporary local API and exercises its real HTTP routes

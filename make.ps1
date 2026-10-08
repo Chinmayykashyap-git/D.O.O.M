@@ -33,6 +33,7 @@ function Invoke-Verification {
     Invoke-FrontendBuild
     Invoke-Checked "python" @("-m", "ruff", "check", "doom", "holdout_attacks", "tests")
     Invoke-Checked "python" @("-m", "mypy", "doom", "holdout_attacks")
+    Invoke-Checked "npm" @("--prefix", "frontend", "test")
     Invoke-Checked "python" @("-m", "doom.demo", "--no-server")
     Invoke-Checked "python" @("-m", "pytest")
     Invoke-Checked "python" @("-m", "doom.e2e")
