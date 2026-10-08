@@ -10,5 +10,5 @@ data/
 *.egg-info/
 .coverage
 coverage.xml
-reports/
 holdout_attacks/__pycache__/
+frontend/tsconfig.tsbuildinfo

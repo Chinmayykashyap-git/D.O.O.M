@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from doom.generator import PORTS
+from doom.schema import PORTS
 from doom.store import EvidenceStore
 from doom.streaming import StreamingService, public_event
 

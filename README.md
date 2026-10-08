@@ -3,7 +3,7 @@
 **Detection, Observation & Operational Manifest Reconstruction**  
 **LATVERIAN** — *When the manifest cannot be trusted, reconstruct the truth.*
 
-D.O.O.M. is a local-first cargo-manifest forensic demonstrator. It generates a repeatable maritime manifest, introduces seven batch tampering scenarios, detects suspicious records with explainable checks, records explicit reconstruction decisions, and serves a React/TypeScript operations console and live event stream.
+D.O.O.M. is a local-first cargo-manifest forensic demonstrator. It generates a repeatable maritime manifest and independent synthetic witnesses, introduces twelve batch tampering variants, detects suspicious records with explainable checks, records explicit reconstruction decisions, and serves a React/TypeScript operations console and live event stream.
 
 > The generated records and scores are synthetic hackathon-demo evidence. They are not real shipment records or a production security benchmark.
 
@@ -21,7 +21,7 @@ Set-Location ..
 python -m doom.demo
 ```
 
-The demo creates `data/`, prints the measured batch evaluation, builds the frontend if needed, starts the local dashboard at <http://127.0.0.1:8000>, and injects a previously unseen schema attack into its simulated live stream. Stop it with **Ctrl+C**.
+The demo creates `data/` and `reports/`, prints the measured batch evaluation, builds the frontend if needed, starts the local dashboard at <http://127.0.0.1:8000>, and injects a previously unseen schema attack into its simulated live stream. Stop it with **Ctrl+C**.
 
 Run the generator, detectors, reconstruction, evaluator, and one live unknown-attack event without starting the servers:
 
@@ -63,9 +63,9 @@ npm run build
 
 ## Forensic trust boundary
 
-The batch detector receives only a corrupted manifest and an independently maintained expected-record-ID control ledger. It does **not** receive the clean manifest or hidden injection log. The latter is created separately and consumed only by `doom.metrics.evaluate_detection` for this synthetic run's evaluation. It is neither loaded into the evidence database nor exposed by the API or UI. Missing IDs can be identified through the control ledger; absent payloads are marked `UNRECOVERABLE`, never fabricated.
+The batch detector receives only a corrupted manifest, an ID/sequence/hash control ledger, and generated owner, container, vessel, port-event, and customs witnesses. It does **not** receive the clean manifest or hidden injection log. Attack generation and oracle persistence are isolated in `doom.corruption` and `doom.oracle`; the log lives in a separate `data/oracle/attack_truth.sqlite3` database and is consumed only by `doom.metrics.evaluate_detection`. The evidence database has no injection-truth table, and no API or UI exposes the oracle. Missing IDs are detected through the control ledger; absent payloads are marked `UNRECOVERABLE`, never fabricated.
 
-Detectors combine duplicate analysis, registered-owner/container consistency, route membership, time ordering, open-set schema novelty, and an Isolation Forest over numeric shipping behavior. Finding confidence, risk, evidence codes, detector provenance, and related-record links accompany every incident. Reconstruction emits a materialized manifest output and one explicit decision for every present row and every ledger-confirmed missing ID: `ORIGINAL`, `REPAIRED`, `REMOVED`, or `UNRECOVERABLE`. A repair includes the changed field, prior value, recovered value, and evidence-based explanation.
+Detectors combine exact/near duplicate analysis, control-ledger payload and sequence validation, registered owner/container/vessel checks, route and event-history consistency, time feasibility, customs value checks, and open-set schema novelty. Standard evidence includes detector, records, field, expected/observed values, contribution, and explanation; incidents include type hypotheses and a counterfactual. Reconstruction emits a materialized manifest and one explicit decision for every present row and every ledger-confirmed missing ID: `ORIGINAL`, `REPAIRED`, `REMOVED`, or `UNRECOVERABLE`. A repair includes the witness, changed field, prior value, recovered value, and explanation.
 
 ## Product modules
 
@@ -73,7 +73,7 @@ The console includes Command overview, Manifest integrity, Active incidents, Rec
 
 ## Generated artifacts
 
-The ignored local `data/` directory contains the clean reference manifest, corrupted input, independent control ledger, evaluator-only hidden injection log, measured evaluation summary, and SQLite evidence database. Keep the injection log out of detector inputs and production systems. See [DATA_DICTIONARY.md](./DATA_DICTIONARY.md), [ARCHITECTURE.md](./ARCHITECTURE.md), [APPROACH_DOSSIER.md](./APPROACH_DOSSIER.md), and [DEMO.md](./DEMO.md).
+The ignored local `data/` directory contains the clean reference manifest, corrupted input, independent control ledger, synthetic witness tables, the operator evidence database, and an isolated evaluator-only oracle database. The tracked `reports/metrics.json` is generated by the reproducible run. Keep the oracle database out of detector inputs and operational deployments. See [ATTACKS.md](./ATTACKS.md), [DATA_DICTIONARY.md](./DATA_DICTIONARY.md), [ARCHITECTURE.md](./ARCHITECTURE.md), [APPROACH_DOSSIER.md](./APPROACH_DOSSIER.md), and [DEMO.md](./DEMO.md).
 
 ## Known limitations
 

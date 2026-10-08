@@ -39,6 +39,14 @@ Top importances: row order 0.3988, arrival hour 0.1058, departure hour 0.1015, e
 
 Leak sources confirmed by code: duplicate `-COPY` suffix, `MF-FAB-...` fabricated IDs, unregistered verbose owner/container strings, 30x value edits, appended extra rows, simple sequential IDs correlated with time/route, and attack families ordered in injection batches. The sampled row-order feature was especially informative.
 
+## Phase 1 follow-up
+
+The generator and detector were replaced with seeded manifests whose identifiers and rows are randomized, twelve attack families use plausible-format identifiers, and synthetic owner/container/vessel/customs/port/movement witnesses are generated separately. Detection uses an ID/sequence/hash control ledger and never receives clean rows or attack labels. Oracle labels and original fields are persisted in `data/oracle/attack_truth.sqlite3`, separate from the operator evidence database.
+
+The surface-only classifier gate was rerun on five deterministic balanced splits using the suite's RF120 parameters: mean accuracy **0.5064**, mean ROC AUC **0.4837**. Per-seed accuracy: 0.3617, 0.4894, 0.5106, 0.6170, 0.5532. Per-seed AUC: 0.2717, 0.5000, 0.5127, 0.6377, 0.4964. This gate checks a bounded list of generated surface features; it does not prove the absence of every possible data leak.
+
+The current seed-1907, 2,400-row synthetic run reports 168 injected attacks, 168 TP, 0 FP, 0 FN, 1.0 type accuracy, 168/168 status decisions correct, and 210/210 modified fields restored. These results are not independent external validation and should not be interpreted as production performance. The full current pytest result is 9 passed. See [`reports/metrics.json`](./reports/metrics.json).
+
 ## Determinism check
 
 Three independent `generate_batch(300, 88)` runs produced identical SHA-256 digests for the corrupted CSV (`a2680408f69d0e68fcd38c0e0798842a5202ed7ed0050f1963b4bb8622b4f557`) and sorted-JSON injection log (`4df6483910aeb4840b9843c70e068e0beca0d20869ae983cfbdf6d0f143f4a53`). This establishes deterministic serialization for that generator call, not an end-to-end export/import byte contract.

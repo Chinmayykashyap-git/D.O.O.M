@@ -1,8 +1,7 @@
-"""Deterministic synthetic shipping manifests and isolated attack injection."""
+"""Deterministic, plausible synthetic shipments and independent witness ledgers."""
 
 from __future__ import annotations
 
-import json
 import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -11,180 +10,258 @@ from typing import Any
 
 import pandas as pd
 
+from doom.schema import (
+    CONTAINER_LIMITS_KG,
+    MANIFEST_COLUMNS,
+    OWNERS,
+    PORTS,
+    ROUTES,
+    VESSELS,
+    VESSEL_SPEED_KNOTS,
+    route_distance_nm,
+    seal_manifest,
+)
 
 SEED = 1907
-OWNERS = {
-    "Aster Maritime": "AST",
-    "Crown Meridian": "CRM",
-    "Northstar Freight": "NSF",
-    "Pelagic Union": "PLU",
-    "Ironclad Logistics": "IRN",
-    "Sable Oceanic": "SAB",
-}
-PORTS = {
-    "NLRTM": ("Rotterdam", 51.95, 4.14),
-    "SGSIN": ("Singapore", 1.26, 103.82),
-    "USLAX": ("Los Angeles", 33.74, -118.27),
-    "AEJEA": ("Jebel Ali", 24.99, 55.06),
-    "CNSHA": ("Shanghai", 31.23, 121.47),
-    "DEHAM": ("Hamburg", 53.55, 9.99),
-    "BRSSZ": ("Santos", -23.96, -46.33),
-    "JPTYO": ("Tokyo", 35.65, 139.84),
-    "GBFXT": ("Felixstowe", 51.96, 1.35),
-    "INNSA": ("Nhava Sheva", 18.95, 72.95),
-}
-ROUTES = [
-    ("CNSHA", "SGSIN", "AEJEA", "NLRTM"),
-    ("SGSIN", "JPTYO", "USLAX"),
-    ("BRSSZ", "NLRTM", "GBFXT"),
-    ("INNSA", "AEJEA", "DEHAM"),
-    ("USLAX", "SGSIN", "CNSHA"),
-    ("DEHAM", "NLRTM", "GBFXT"),
-]
-
-MANIFEST_COLUMNS = [
-    "record_id", "shipment_id", "owner", "container_id", "container_owner",
-    "origin", "destination", "planned_route", "departure_ts", "arrival_ts",
-    "declared_value_usd", "weight_kg", "status", "current_location",
-    "event_ts",
-]
 
 
 @dataclass
-class GeneratedBatch:
-    clean: pd.DataFrame
-    corrupted: pd.DataFrame
-    expected_record_ids: list[str]
-    hidden_injection_log: list[dict[str, Any]]
+class WitnessTables:
+    owner_registry: pd.DataFrame
+    container_registry: pd.DataFrame
+    vessel_schedule: pd.DataFrame
+    movement_history: pd.DataFrame
+    port_logs: pd.DataFrame
+    customs_entries: pd.DataFrame
+
+    def as_dict(self) -> dict[str, list[dict[str, Any]]]:
+        return {
+            name: frame.to_dict(orient="records")
+            for name, frame in self.__dict__.items()
+        }
 
 
-def generate_clean_manifest(count: int = 2400, seed: int = SEED) -> pd.DataFrame:
-    """Create a repeatable, internally consistent manifest with route histories."""
+def generate_dataset(
+    count: int = 2400, seed: int = SEED
+) -> tuple[pd.DataFrame, WitnessTables]:
+    """Generate a stable manifest and correlated but separately queryable witnesses."""
     if count < 1:
         raise ValueError("count must be at least 1")
     rng = random.Random(seed)
+    owner_names = tuple(OWNERS)
+    identifier_pool = rng.sample(range(1_000_000, 9_999_999), count * 3)
     start = datetime(2026, 1, 1, tzinfo=timezone.utc)
-    rows: list[dict[str, Any]] = []
-    owner_names = list(OWNERS)
+    records: list[dict[str, Any]] = []
+    schedules: list[dict[str, Any]] = []
+    container_rows: list[dict[str, Any]] = []
 
     for index in range(count):
-        owner = owner_names[index % len(owner_names)]
-        route = ROUTES[index % len(ROUTES)]
-        origin, destination = route[0], route[-1]
-        departure = start + timedelta(hours=index * 3 + rng.randint(0, 2))
-        transit_hours = 24 * (len(route) - 1) + rng.randint(12, 60)
-        arrival = departure + timedelta(hours=transit_hours)
-        container = f"{OWNERS[owner]}U{index:07d}"
-        value = round(rng.uniform(12_000, 185_000), 2)
-        weight = round(rng.uniform(2_000, 28_000), 1)
-        route_position = rng.randrange(len(route))
-        event_time = departure + (arrival - departure) * (
-            route_position / max(len(route) - 1, 1)
+        owner = rng.choice(owner_names)
+        owner_id = OWNERS[owner]
+        route = rng.choice(ROUTES)
+        distance = route_distance_nm(route)
+        vessel = rng.choice(VESSELS[owner])
+        speed_class = rng.choice(tuple(VESSEL_SPEED_KNOTS))
+        speed = VESSEL_SPEED_KNOTS[speed_class]
+        quantity = rng.randint(20, 980)
+        price = round(rng.uniform(45.0, 1750.0), 2)
+        value = round(quantity * price, 2)
+        container_type = rng.choice(tuple(CONTAINER_LIMITS_KG))
+        low, high = CONTAINER_LIMITS_KG[container_type]
+        weight = round(rng.uniform(low, high), 1)
+        departure = start + timedelta(
+            days=rng.randint(0, 270),
+            hours=rng.randint(0, 23),
+            minutes=rng.randint(0, 59),
+            seconds=rng.randint(0, 59),
         )
-        rows.append({
-            "record_id": f"MF-{index + 1:07d}",
-            "shipment_id": f"SHP-{index + 1:07d}",
+        sea_hours = distance / speed
+        dwell_hours = 9.0 * (len(route) - 2)
+        transit_hours = sea_hours + dwell_hours + rng.uniform(8.0, 40.0)
+        arrival = departure + timedelta(hours=transit_hours)
+        position = rng.randrange(max(1, len(route) - 1))
+        event_time = departure + (arrival - departure) * (
+            position / max(len(route) - 1, 1)
+        )
+        record_id = f"MF-{identifier_pool[index * 3]:07d}"
+        shipment_id = f"SHP-{identifier_pool[index * 3 + 1]:07d}"
+        container_id = f"{owner_id}U{identifier_pool[index * 3 + 2]:07d}"
+        record = {
+            "record_id": record_id,
+            "shipment_id": shipment_id,
             "owner": owner,
-            "container_id": container,
+            "owner_id": owner_id,
+            "container_id": container_id,
+            "container_type": container_type,
             "container_owner": owner,
-            "origin": origin,
-            "destination": destination,
+            "vessel_id": vessel,
+            "origin": route[0],
+            "destination": route[-1],
             "planned_route": "|".join(route),
-            "departure_ts": departure.isoformat(),
-            "arrival_ts": arrival.isoformat(),
+            "route_distance_nm": distance,
+            "speed_class": speed_class,
+            "quantity": quantity,
+            "unit_price_usd": price,
             "declared_value_usd": value,
             "weight_kg": weight,
             "status": "IN_TRANSIT",
-            "current_location": route[route_position],
+            "current_location": route[position],
+            "departure_ts": departure.isoformat(),
+            "arrival_ts": arrival.isoformat(),
             "event_ts": event_time.isoformat(),
-        })
-    return pd.DataFrame(rows, columns=MANIFEST_COLUMNS)
-
-
-def inject_attacks(
-    clean: pd.DataFrame, seed: int = SEED + 1, attack_fraction: float = 0.07
-) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
-    """Corrupt a copy and return isolated evaluator-only ground truth."""
-    if not 0 < attack_fraction <= 0.25:
-        raise ValueError("attack_fraction must be in the interval (0, 0.25]")
-    rng = random.Random(seed)
-    corrupted = clean.copy(deep=True)
-    attacks = [
-        "MODIFIED", "DELETED", "DUPLICATE", "FABRICATED",
-        "TIMESTAMP_MANIPULATION", "IMPOSSIBLE_MOVEMENT",
-        "RELATIONAL_INCONSISTENCY",
-    ]
-    per_attack = max(1, round(len(clean) * attack_fraction / len(attacks)))
-    selected_count = min(len(clean), per_attack * len(attacks))
-    indexes = rng.sample(list(clean.index), selected_count)
-    attack_sequence = [attack for attack in attacks for _ in range(per_attack)]
-    truth: list[dict[str, Any]] = []
-
-    for position, (attack, source_index) in enumerate(zip(attack_sequence, indexes)):
-        original = clean.loc[source_index].to_dict()
-        row_id = str(original["record_id"])
-        target_index = corrupted.index[
-            corrupted["record_id"].astype(str) == row_id
-        ]
-        entry: dict[str, Any] = {
-            "record_id": row_id,
-            "tampering_type": attack,
-            "original": original,
         }
-        if attack == "MODIFIED":
-            corrupted.loc[target_index[0], "declared_value_usd"] = round(
-                float(original["declared_value_usd"]) * 30, 2
-            )
-        elif attack == "DELETED":
-            corrupted = corrupted.drop(index=target_index)
-        elif attack == "DUPLICATE":
-            duplicate = original.copy()
-            duplicate["record_id"] = f"{row_id}-COPY"
-            corrupted = pd.concat([corrupted, pd.DataFrame([duplicate])], ignore_index=True)
-            entry["record_id"] = duplicate["record_id"]
-        elif attack == "FABRICATED":
-            fabricated = original.copy()
-            fabricated["record_id"] = f"MF-FAB-{seed:05d}-{position:03d}"
-            fabricated["shipment_id"] = f"SHP-FAB-{seed:05d}-{position:03d}"
-            fabricated["owner"] = "Unregistered Carrier"
-            fabricated["container_id"] = f"VOIDU{seed:07d}"
-            fabricated["container_owner"] = "Unregistered Carrier"
-            corrupted = pd.concat([corrupted, pd.DataFrame([fabricated])], ignore_index=True)
-            entry["record_id"] = fabricated["record_id"]
-        elif attack == "TIMESTAMP_MANIPULATION":
-            corrupted.loc[target_index[0], "arrival_ts"] = (
-                datetime.fromisoformat(str(original["departure_ts"]))
-                - timedelta(days=45)
-            ).isoformat()
-        elif attack == "IMPOSSIBLE_MOVEMENT":
-            corrupted.loc[target_index[0], "current_location"] = "XXZZZ"
-        elif attack == "RELATIONAL_INCONSISTENCY":
-            alternatives = [name for name in OWNERS if name != original["owner"]]
-            corrupted.loc[target_index[0], "owner"] = alternatives[0]
-        truth.append(entry)
+        records.append(record)
+        schedules.append({
+            "shipment_id": shipment_id,
+            "vessel_id": vessel,
+            "owner_id": owner_id,
+            "speed_class": speed_class,
+            "speed_knots": speed,
+            "route": "|".join(route),
+            "departure_ts": departure.isoformat(),
+            "arrival_ts": arrival.isoformat(),
+        })
+        container_rows.append({
+            "container_id": container_id,
+            "container_type": container_type,
+            "owner_id": owner_id,
+            "maximum_weight_kg": high,
+        })
 
-    return corrupted.reset_index(drop=True), truth
+    rng.shuffle(records)
+    manifest = pd.DataFrame(seal_manifest(records), columns=MANIFEST_COLUMNS)
+    witnesses = build_witness_tables(manifest, schedules, container_rows)
+    return manifest, witnesses
 
 
-def generate_batch(
-    count: int = 2400, seed: int = SEED, attack_fraction: float = 0.07
-) -> GeneratedBatch:
-    clean = generate_clean_manifest(count, seed)
-    corrupted, truth = inject_attacks(clean, seed + 1, attack_fraction)
-    return GeneratedBatch(clean, corrupted, clean["record_id"].tolist(), truth)
+def generate_clean_manifest(count: int = 2400, seed: int = SEED) -> pd.DataFrame:
+    """Compatibility helper returning the manifest component of generated data."""
+    return generate_dataset(count, seed)[0]
 
 
-def write_batch(batch: GeneratedBatch, output_dir: str | Path) -> None:
-    """Persist operator-facing records separately from the evaluator-only log."""
-    destination = Path(output_dir)
+def build_witness_tables(
+    manifest: pd.DataFrame,
+    schedules: list[dict[str, Any]] | None = None,
+    container_rows: list[dict[str, Any]] | None = None,
+) -> WitnessTables:
+    """Build synthetic cross-table witnesses and event-sourced route histories."""
+    if schedules is None:
+        schedules = []
+    if container_rows is None:
+        container_rows = []
+    existing_schedules = {row["shipment_id"] for row in schedules}
+    existing_containers = {row["container_id"] for row in container_rows}
+    if len(schedules) != len(manifest) or not existing_schedules:
+        schedules = manifest[[
+            "shipment_id", "vessel_id", "owner_id", "speed_class",
+            "planned_route", "departure_ts", "arrival_ts",
+        ]].rename(columns={"planned_route": "route"}).to_dict(orient="records")
+        for row in schedules:
+            row["speed_knots"] = VESSEL_SPEED_KNOTS[str(row["speed_class"])]
+    if len(container_rows) != len(manifest) or not existing_containers:
+        container_rows = manifest[[
+            "container_id", "container_type", "owner_id",
+        ]].to_dict(orient="records")
+        for row in container_rows:
+            row["maximum_weight_kg"] = CONTAINER_LIMITS_KG[str(row["container_type"])][1]
+
+    owner_rows = [
+        {"owner_id": code, "owner_name": name, "active": True}
+        for name, code in OWNERS.items()
+    ]
+    event_records: list[dict[str, Any]] = []
+    customs: list[dict[str, Any]] = []
+    port_logs: list[dict[str, Any]] = []
+    event_sequence = 0
+    for row in manifest.to_dict(orient="records"):
+        route = str(row["planned_route"]).split("|")
+        departure = datetime.fromisoformat(str(row["departure_ts"]))
+        arrival = datetime.fromisoformat(str(row["arrival_ts"]))
+        duration = arrival - departure
+        shipment_id = str(row["shipment_id"])
+        movements: list[tuple[str, str, float]] = [("LOAD", route[0], 0.0)]
+        for position in range(1, len(route)):
+            fraction = position / max(len(route) - 1, 1)
+            movements.append(("PORT_ARRIVAL", route[position], fraction))
+            if position < len(route) - 1:
+                movements.extend([
+                    ("TRANSFER", route[position], fraction + 0.001),
+                    ("PORT_DEPARTURE", route[position], fraction + 0.002),
+                ])
+            else:
+                movements.extend([
+                    ("CUSTOMS", route[position], fraction + 0.001),
+                    ("DISCHARGE", route[position], fraction + 0.002),
+                ])
+        for event_type, port, fraction in movements:
+            event_sequence += 1
+            timestamp = departure + duration * min(fraction, 0.999)
+            event = {
+                "event_id": f"EV-{event_sequence:010d}",
+                "event_sequence": event_sequence,
+                "shipment_id": shipment_id,
+                "record_id": row["record_id"],
+                "container_id": row["container_id"],
+                "event_type": event_type,
+                "port_code": port,
+                "event_ts": timestamp.isoformat(),
+            }
+            event_records.append(event)
+            if event_type in {"PORT_ARRIVAL", "PORT_DEPARTURE", "TRANSFER"}:
+                port_logs.append({
+                    "port_code": port,
+                    "event_type": event_type,
+                    "event_ts": timestamp.isoformat(),
+                    "shipment_id": shipment_id,
+                    "container_id": row["container_id"],
+                    "record_id": row["record_id"],
+                })
+        customs.append({
+            "customs_id": f"CU-{event_sequence:010d}",
+            "shipment_id": shipment_id,
+            "container_id": row["container_id"],
+            "destination": row["destination"],
+            "declared_value_usd": row["declared_value_usd"],
+            "quantity": row["quantity"],
+            "clearance_ts": arrival.isoformat(),
+        })
+
+    return WitnessTables(
+        owner_registry=pd.DataFrame(owner_rows),
+        container_registry=pd.DataFrame(container_rows),
+        vessel_schedule=pd.DataFrame(schedules),
+        movement_history=pd.DataFrame(event_records),
+        port_logs=pd.DataFrame(port_logs),
+        customs_entries=pd.DataFrame(customs),
+    )
+
+
+def output_hashes(manifest: pd.DataFrame) -> dict[str, str]:
+    """Stable deterministic serialization digests used by the generator gate."""
+    import hashlib
+
+    csv = manifest.to_csv(index=False, lineterminator="\n").encode("utf-8")
+    return {"manifest_sha256": hashlib.sha256(csv).hexdigest()}
+
+
+def make_control_ledger(manifest: pd.DataFrame) -> pd.DataFrame:
+    return manifest[[
+        "record_id", "ledger_sequence", "previous_hash", "payload_hash", "ledger_hash",
+    ]].copy()
+
+
+def write_manifest(manifest: pd.DataFrame, output_path: str | Path) -> None:
+    destination = Path(output_path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        manifest.to_csv(index=False, lineterminator="\n"),
+        encoding="utf-8",
+        newline="",
+    )
+
+
+def write_witness_tables(witnesses: WitnessTables, output_dir: str | Path) -> None:
+    destination = Path(output_dir) / "witnesses"
     destination.mkdir(parents=True, exist_ok=True)
-    batch.clean.to_csv(destination / "clean_manifest.csv", index=False)
-    batch.corrupted.to_csv(destination / "corrupted_manifest.csv", index=False)
-    (destination / "control_totals.json").write_text(
-        json.dumps({"expected_record_ids": batch.expected_record_ids}, indent=2),
-        encoding="utf-8",
-    )
-    (destination / "hidden_injection_log.json").write_text(
-        json.dumps(batch.hidden_injection_log, indent=2, default=str),
-        encoding="utf-8",
-    )
+    for name, frame in witnesses.__dict__.items():
+        frame.to_csv(destination / f"{name}.csv", index=False, lineterminator="\n")

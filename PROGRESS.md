@@ -1,26 +1,27 @@
 # Autonomous level-up progress
 
 ## Current phase
-Phase 0 — Honest audit: **complete**.  
-Next: Phase 1 — Data redundancy and generator integrity.
+Phase 1 — Data redundancy and generator integrity: **complete**.
+Next: Phase 2 — Calibrated evidence fusion and ablation.
 
 ## Completed phases
 - Phase 0: baseline tests (6 passed), measured seed-1907 2,400-record run (168 attacks; 168 TP; 0 FP; 0 FN), generator surface-leakage test (97.72% accuracy, 0.8663 ROC AUC), and three repeated same-seed byte-hash comparisons (all identical). Audited missing coverage tooling and test gaps.
+- Phase 1: deterministic realistic generator, 12 attack families, separate evaluator-only oracle SQLite, ID/sequence/hash control ledger, owner/container/vessel/customs/movement witnesses, structured evidence and counterfactuals, auditable reconstruction diffs, per-type/confusion/reconstruction metrics, and UI evidence-contract alignment. Standard seed 1907 produced 168 injected attacks, 168 TP, 0 FP, 0 FN, 1.0 type accuracy, 1.0 status accuracy (168/168), and 1.0 field accuracy (210/210). Five surface-only balanced splits using the suite's RF120 configuration produced mean accuracy 0.5064 and mean ROC AUC 0.4837. These are synthetic in-distribution results, not a deployment claim.
 
 ## Open issues
-- Generator leaks attack status through row order, unusual duplicate/fabrication identifiers, owner text, and unusually large modified values.
-- Detector scores have not been calibrated; evidence lacks a standard contract, per-type probabilities, and counterfactuals.
-- No hash chain, event history, relational witness tables, holdout attack set, or field-level reconstruction audit.
-- Streaming latency and throughput have not been measured; late/out-of-order behavior is unimplemented.
-- Evaluation does not report multi-seed variance, per-type detection, confusion, reconstruction accuracy, or ablation.
+- Type hypotheses are uncalibrated; no reliability study, calibration artifact, or ablation report exists yet.
+- No independent holdout-attack module or holdout-family evaluation exists yet.
+- Streaming latency/throughput and late/out-of-order semantics have not been measured or implemented.
+- Evaluation still lacks a reproducible five-seed report and regression targets.
 - UI remains broader than the requested focused workflows and has no record-tampering interaction or custody screen.
-- Phase-0 coverage measurement did not run because `coverage` was not installed. Add it as a development dependency and measure during verification.
-- Last observed test run: 6 passed, with one Starlette/httpx upstream deprecation warning.
+- Final demo, make targets, coverage, frontend tests, limitations, and timed demo script remain outstanding.
+- Last observed test run: 9 passed, with one Starlette/httpx upstream deprecation warning.
 
 ## Next step
-Replace the single-row, surface-obvious sample generator with deterministic realistic manifests, synthetic witness tables, movement events, record hash/sequences, and subtle stratified attack families. Add deterministic byte-output and leakage gates before phase 1 commit.
+Implement calibration without fitting to holdout families, measure held-out calibration reliability, and report ablation results. Preserve evidence provenance and make calibration claims auditable.
 
 ## Commit log
 | Phase | Commit |
 |---|---|
-| 0 | pending |
+| 0 | `1f1b40b` |
+| 1 | pending |

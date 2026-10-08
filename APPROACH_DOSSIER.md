@@ -2,34 +2,34 @@
 
 ## Design objective
 
-Demonstrate a defensible local forensic flow rather than claim an oracle can infer lost truth. Every detector finding carries an evidence code, detail, severity, detector provenance, score, and confidence. Every observed or ledger-expected record receives an explicit reconstruction disposition.
+Demonstrate a defensible local forensic flow rather than claim an oracle can infer lost truth. Every detector finding carries an evidence code, detail, severity, detector provenance, score contribution, and confidence. Every observed or ledger-expected record receives an explicit reconstruction disposition.
 
 ## Detection approach
 
-1. **Duplicate:** count repeated shipment IDs and flag only extra rows, retaining a deterministic canonical record.
-2. **Relational consistency:** compare the declared owner against the registered container owner.
-3. **Route validation:** check that the observed location exists on the declared itinerary.
-4. **Temporal analysis:** parse UTC timestamps, verify arrival follows departure, and ensure event time lies within the shipment interval.
-5. **Fabrication screen:** check parties against the generated known-fleet registry.
-6. **Behavioral novelty:** fit a seeded Isolation Forest on log value, log weight, and value/weight features; use its outlier indication as supporting evidence.
-7. **Deletion:** compare record IDs with the independent expected-ID ledger; never infer or recover deleted payload fields from attack labels.
-8. **Open-set streaming:** reject unrecognized record fields as schema novelty. The `policy_epoch` streaming attack does not exist in batch injection.
+1. **Duplicates:** group by shipment, compare exact/near payloads, and use the expected record ID/sequence ledger to identify the anchored row.
+2. **Ledger integrity:** recompute canonical payload and sequence-linked hashes and compare IDs, sequences, and digests with a separately generated control ledger.
+3. **Relational consistency:** compare owner, container, and vessel references against independent generated registries and schedules.
+4. **Route validation:** derive great-circle itinerary length, compare schedule/port logs, and verify observed waypoints against event-sourced movement history.
+5. **Temporal analysis:** verify ordered UTC timestamps and plausible route transit for the vessel speed class.
+6. **Customs/value consistency:** derive `declared_value_usd = quantity × unit_price_usd` and compare with an independent synthetic customs entry.
+7. **Deletion/fabrication:** compare record IDs and sequence with the expected ledger; never infer or recover deleted values from attack labels.
+8. **Open-set streaming:** flag unrecognized fields with schema-novelty evidence. `policy_epoch` exists in the stream demo but not in batch injection.
 
-Scores reflect detector rule confidence and evidence severity; they are operational prioritization values, not calibrated probabilities. Confidence is kept distinct from risk. Fused findings retain every supporting observation and detector, and the strongest supported rule selects the displayed class.
+Evidence contributions are rule strengths, not calibrated probabilities. Per-type scores are uncalibrated hypotheses until a separately trained and evaluated calibration artifact is implemented. Confidence remains distinct from incident risk.
 
 ## Reconstruction doctrine
 
 - `ORIGINAL`: no supported finding.
-- `REPAIRED`: a value can be restored from independently corroborated manifest evidence. The change and reason are recorded.
+- `REPAIRED`: a value can be restored from independently corroborated evidence. The witness, changed field, before/after values, and reason are recorded.
 - `REMOVED`: a high-confidence fabricated row or duplicate extra is excluded from the reconstructed view.
-- `UNRECOVERABLE`: tampering is supported but the authentic value is not evidenced, or expected record contents are absent. The row is not silently rewritten.
+- `UNRECOVERABLE`: tampering is supported but authentic content is not evidenced, or an expected payload is absent. The system does not silently rewrite it.
 
-The clean reference and hidden injection log do not participate in detection or reconstruction. Exact restoration of a deleted row is impossible with only its identifier; the system exposes this limitation instead of pretending otherwise.
+The clean reference and hidden attack log do not participate in detection or reconstruction. Exact restoration of a deleted payload is impossible with only its identifier; the system exposes this limitation rather than pretending otherwise.
 
 ## Evaluation discipline
 
-The demonstration computes record-level precision, recall, F1, and attack-type accuracy by comparing detector output to the hidden synthetic injection log only after detection. It reports false positives and false negatives and explicitly labels the result synthetic. It does not present an invented benchmark or imply field effectiveness.
+The demonstration computes record-level and per-type detection, type confusion, and reconstruction measures by comparing the detector output to the isolated synthetic oracle only after detection. It reports false positives and false negatives and labels metrics as synthetic. These scores describe a controlled, seed-specific scenario—not production effectiveness.
 
 ## Demonstration boundaries
 
-All names, shipments, times, amounts, routes, anomalies, and results are synthetic. The route catalog is intentionally small. The model is fit per batch and does not learn a persistent production baseline. The stream is simulated for product demonstration; it has no external broker, authenticated producer, durable queue, or back-pressure policy beyond bounded client queues.
+All names, shipments, times, amounts, routes, hashes, customs entries, witnesses, anomalies, and results are synthetic. The route catalog is intentionally small. The control ledger is not cryptographically signed; its hash chain alone does not protect against an attacker who can replace both data and ledger. The stream is a local simulation without an external broker, authenticated producer, durable queue, or high-availability guarantees.

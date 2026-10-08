@@ -15,9 +15,16 @@ from pathlib import Path
 import uvicorn
 
 from doom.api import create_app
+from doom.corruption import ATTACK_TYPES, inject_attacks
 from doom.detectors import ManifestDetector
-from doom.generator import generate_batch, write_batch
+from doom.generator import (
+    generate_dataset,
+    make_control_ledger,
+    write_manifest,
+    write_witness_tables,
+)
 from doom.metrics import evaluate_detection
+from doom.oracle import OracleStore
 from doom.reconstruction import reconstruct_manifest
 from doom.store import EvidenceStore
 from doom.streaming import StreamingService
@@ -27,41 +34,58 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.environ.get("DOOM_DATA_DIR", str(ROOT / "data"))).resolve()
 
 
-def prepare_demo(count: int = 2400) -> dict:
-    batch = generate_batch(count=count)
-    write_batch(batch, DATA_DIR)
+def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
+    clean, witnesses = generate_dataset(count=count, seed=seed)
+    corrupted, hidden_truth = inject_attacks(clean, seed=seed + 1)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    write_manifest(clean, DATA_DIR / "clean_manifest.csv")
+    write_manifest(corrupted, DATA_DIR / "corrupted_manifest.csv")
+    control_ledger = make_control_ledger(clean)
+    control_ledger.to_csv(DATA_DIR / "control_ledger.csv", index=False, lineterminator="\n")
+    write_witness_tables(witnesses, DATA_DIR)
+    OracleStore(DATA_DIR / "oracle" / "attack_truth.sqlite3").replace(hidden_truth)
     detector = ManifestDetector()
     incidents = detector.detect(
-        batch.corrupted,
-        expected_record_ids=batch.expected_record_ids,
+        corrupted,
+        expected_record_ids=clean["record_id"].astype(str).tolist(),
+        expected_ledger=control_ledger,
+        witnesses=witnesses,
     )
-    repaired, decisions = reconstruct_manifest(batch.corrupted, incidents)
-    metrics = evaluate_detection(batch.hidden_injection_log, incidents)
+    repaired, decisions = reconstruct_manifest(corrupted, incidents)
+    evaluator_truth = OracleStore(DATA_DIR / "oracle" / "attack_truth.sqlite3").entries()
+    metrics = evaluate_detection(
+        evaluator_truth, incidents, decisions, repaired.to_dict(orient="records")
+    )
     EvidenceStore(DATA_DIR / "doom.sqlite3").replace_batch(
-        batch.corrupted, repaired, incidents, decisions, metrics
+        corrupted, repaired, incidents, decisions, metrics
     )
     summary = {
         **metrics,
-        "generated_records": len(batch.clean),
-        "corrupted_records": len(batch.corrupted),
+        "generated_records": len(clean),
+        "corrupted_records": len(corrupted),
         "reconstructed_rows": len(repaired),
         "reconstruction_decisions": len(decisions),
         "incident_types": dict(sorted({
             kind: sum(item["tampering_type"] == kind for item in incidents)
             for kind in {item["tampering_type"] for item in incidents}
         }.items())),
+        "attack_types": list(ATTACK_TYPES),
     }
-    (DATA_DIR / "evaluation.json").write_text(
+    reports = ROOT / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    (reports / "metrics.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8"
     )
+    (DATA_DIR / "evaluation.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
 
 
 async def exercise_stream() -> dict:
     store = EvidenceStore(DATA_DIR / "doom.sqlite3")
     stream = StreamingService(store)
-    row = generate_batch(count=10).clean.iloc[0].to_dict()
-    row["record_id"] = "LIVE-UNKNOWN-0001"
+    from doom.generator import generate_clean_manifest
+    row = generate_clean_manifest(1, seed=83001).iloc[0].to_dict()
+    row["record_id"] = "MF-8300001"
     row["policy_epoch"] = "OMEGA-7"
     row["routing_signature"] = "UNSEEN-FUTURE-FORMAT"
     event = await stream.publish(row)
@@ -118,10 +142,11 @@ def main() -> None:
         action="store_true",
         help="Generate, evaluate, and exercise streaming without launching the dashboard.",
     )
+    parser.add_argument("--seed", type=int, default=1907)
     args = parser.parse_args()
     if args.records < 30:
         parser.error("--records must be at least 30 for meaningful anomaly detection.")
-    summary = prepare_demo(args.records)
+    summary = prepare_demo(args.records, args.seed)
     print("D.O.O.M. / FORENSIC RUN")
     print(json.dumps(summary, indent=2))
     if args.no_server:
