@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import math
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import pandas as pd
 
@@ -11,7 +12,6 @@ from doom.schema import (
     CONTAINER_LIMITS_KG,
     HASH_COLUMNS,
     MANIFEST_COLUMNS,
-    OWNERS,
     VESSEL_SPEED_KNOTS,
     chain_hash,
     payload_hash,
@@ -540,7 +540,7 @@ class ManifestDetector:
         for record_id, evidence in evidence_by_id.items():
             candidates = candidate_by_id.get(record_id, {})
             if candidates:
-                tampering_type = max(candidates, key=candidates.get)
+                tampering_type = max(candidates, key=lambda name: candidates[name])
             elif evidence:
                 tampering_type = TYPE_FOR_EVIDENCE.get(
                     str(evidence[0]["evidence_code"]), "UNKNOWN ANOMALY"

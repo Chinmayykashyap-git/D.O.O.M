@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from collections import deque
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -27,7 +27,7 @@ class StreamingService:
         incident = self.detector.detect_record(record)
         event = {
             "event_id": str(uuid4()),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "record_id": str(record.get("record_id", "UNKNOWN")),
             "status": "ANOMALY" if incident else "CLEARED",
             "incident": incident,

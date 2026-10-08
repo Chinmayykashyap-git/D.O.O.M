@@ -1,46 +1,67 @@
 # Demo runbook
 
-## First run
+## Prerequisites and install
+
+Use Python 3.11+, Node.js, npm, and Windows PowerShell (or GNU Make on other
+platforms).
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-Set-Location frontend
-npm install
-Set-Location ..
+npm --prefix frontend install
+```
+
+## Full local demo
+
+```powershell
 python -m doom.demo
 ```
 
-The one-command demo:
+The command deterministically regenerates the local manifest, independent
+synthetic witnesses, control ledger, oracle fixture, detector findings,
+reconstruction decisions, and per-run metrics; it replaces prior batch data
+instead of appending duplicate rows. It persists operator evidence, starts the
+API/dashboard on loopback, and starts the simulated stream. The third simulated
+event introduces an unknown schema extension and should appear as `UNKNOWN
+ANOMALY`. Use **Ctrl+C** to stop the server.
 
-1. Generates 2,400 reproducible shipping records with fixed seeds.
-2. Writes a clean reference, corrupted manifest, expected-ID ledger, and isolated evaluator log.
-3. Injects modified, deleted, duplicated, fabricated, timestamp, movement, and relational inconsistencies.
-4. Detects anomalies using only the corrupted manifest and expected-ID ledger.
-5. Makes an explicit reconstruction decision for every observed/expected ID.
-6. Calculates and prints synthetic record-level evaluation metrics.
-7. Saves the evidence ledger and evaluation summary under `data/`.
-8. Builds the UI when no local build exists, launches the API and dashboard on loopback, and opens the dashboard.
-9. Starts a simulated live stream and emits a previously unseen schema-novelty attack on the third event.
-
-The command remains running to serve the console; press **Ctrl+C** to stop. The live WebSocket endpoint is `ws://127.0.0.1:8000/api/stream`.
-
-## Offline pipeline check
+To evaluate without launching a server:
 
 ```powershell
 python -m doom.demo --no-server
 ```
 
-This runs all generation, batch analysis, evaluation, persistence, and one unknown live attack without starting a web server.
-
-## Targeted investigation
+This writes the current per-run metrics and a recorded live unknown event.
+Replay that recording without services:
 
 ```powershell
-python -m doom.demo --records 5000 --no-server
-python -m pytest
-Set-Location frontend
-npm run build
+.\make.ps1 demo-offline
 ```
 
-Inspect real run metrics in `data/evaluation.json`; the web interface and `/api/metrics` read the same persisted values. The hidden log is solely an evaluation artifact. Never pass it to the detector or expose it as an operational endpoint.
+The replay command fails clearly if the recording is missing, incomplete, or
+does not contain the expected unknown event.
+
+## Evaluation and gates
+
+```powershell
+.\make.ps1 eval
+.\make.ps1 verify
+```
+
+The equivalents with GNU Make are `make eval` and `make verify`. Evaluation
+writes `reports/metrics.json` and `reports/EVAL.md`. The report separately
+labels the known multi-seed results and small holdout smoke result; treat those
+synthetic measurements as demo evidence, not field performance.
+
+## Inspection
+
+- Dashboard/API: <http://127.0.0.1:8000>
+- API reference: <http://127.0.0.1:8000/docs>
+- API health: `GET /api/health`
+- Batch metrics: `GET /api/metrics`
+- Live event snapshot: `GET /api/stream/events`
+- Live event socket: `ws://127.0.0.1:8000/api/stream`
+
+The hidden oracle is evaluator-only. It must never be passed to detectors,
+served by the API, or exposed in the UI.

@@ -1,11 +1,11 @@
 # Architecture
 
 ```text
-Seeded generator ──> manifest + owner/container/vessel/port/customs witnesses
+Seeded generator ──> manifest + synthetic operational witnesses
       │
-      ├── isolated corruption module ──> corrupted manifest
+      ├── isolated corruption module ──> observed manifest
       │              └── oracle.sqlite3 (labels/originals; evaluator only)
-      └── control ledger (IDs/sequences/hashes; no expected field values)
+      └── control ledger (expected IDs/sequences/hashes; no source field values)
                                              │
                                              v
                             batch detector <─ witnesses
@@ -20,33 +20,60 @@ Seeded generator ──> manifest + owner/container/vessel/port/customs witnesse
                           ├── WebSocket /api/stream
                           └── React + TypeScript console
 
-OracleStore ──> evaluator only ──> reports/metrics.json
-Fixed training seeds ──> calibration fit ──> reports/calibration.json
-Simulated live feed ──> incremental detector ──> event ledger / WebSocket
+Fixed training seeds ──> calibration artifact
+Isolated holdout generator ──> holdout evaluator only
+Known/holdout evaluators ──> reports/metrics.json ──> reports/EVAL.md
+Simulated live feed ──> bounded event history + incremental detector
 ```
 
 ## Components
 
-- `doom.schema`: canonical manifest/witness schema, route geometry, canonical SHA-256 payload and ledger hashes.
-- `doom.generator`: fixed-seed manifest, movement-event, and cross-table witness generation.
-- `doom.corruption`: seeded batch attack injection and oracle-label generation; never imported by the detector.
-- `doom.oracle`: evaluator-only, separate SQLite store for attack labels and original fields.
-- `doom.detectors`: hash/control-ledger, duplicate, relational, route, time, event, customs, and open-schema evidence. It imports neither corruption, oracle, nor evaluation code.
-- `doom.reconstruction`: explicit witness-backed statuses, reconstructed manifest, and field audit trail.
-- `doom.metrics`: evaluator-only known-attack and reconstruction comparisons.
-- `doom.calibration`: seed-separated synthetic logistic calibration fit/evaluation and one-factor ablation study; detector inference consumes exported feature coefficients only.
-- `doom.store`: standard-library SQLite operator evidence database; no ground-truth table.
-- `doom.streaming`: bounded in-process event fan-out and unknown-schema event simulation.
-- `doom.api`: local FastAPI read API, incident evidence detail, and WebSocket endpoint.
-- `frontend`: Vite/React/TypeScript local console.
-- `doom.demo`: generate → corrupt → detect → reconstruct → evaluate → persist → build/start dashboard.
+- `doom.schema`: canonical manifest/witness schema, route geometry, canonical
+  payload hash, and ledger hashes.
+- `doom.generator`: fixed-seed manifest, movement-event, control-ledger, and
+  cross-table witness generation.
+- `doom.corruption`: seeded batch attack injection and oracle-label generation;
+  it is not imported by detector or calibration code.
+- `doom.oracle`: evaluator-only store for attack labels and original values.
+- `doom.detectors`: duplicate, ledger, relational, route, temporal, witness,
+  and schema-novelty evidence. It imports neither corruption, oracle, nor
+  evaluation modules.
+- `doom.reconstruction`: explicit dispositions, evidence-backed field recovery,
+  and before/after audit trails.
+- `doom.metrics`: evaluator-only comparison of findings and reconstruction
+  decisions with isolated synthetic truth.
+- `doom.calibration`: seed-separated logistic calibration and ablation
+  measurements; holdout attack data is excluded.
+- `doom.holdout_eval` and `holdout_attacks`: isolated unknown-family
+  generation/evaluation path; the known evaluation reads its saved result and
+  does not generate holdout examples.
+- `doom.store`: local SQLite operator evidence database with no ground-truth
+  table.
+- `doom.streaming`: in-process event ingestion, bounded recent-event history,
+  incremental detector call, and WebSocket fan-out.
+- `doom.api`: local FastAPI read API, incident detail, and WebSocket endpoint.
+- `frontend`: Vite/React/TypeScript operator console.
+- `doom.demo`: generate → corrupt → detect → reconstruct → evaluate → persist →
+  serve dashboard and simulated stream.
+- `doom.e2e`: starts a temporary local API and exercises its real HTTP routes
+  against a freshly built dashboard.
 
 ## Trust boundaries
 
-The detector accepts the corrupted frame, an ID/sequence/hash control ledger, and synthetic witness tables. It receives neither the clean manifest nor attack labels. Oracle truth is stored in a separate SQLite database and passed only to `doom.metrics`. The operator evidence database has no ground-truth table. A structural test rejects detector imports of `doom.corruption`, `doom.oracle`, and `doom.metrics`.
+The detector accepts the observed frame, expected-ID/sequence/hash ledger, and
+synthetic witness tables. It receives neither the clean manifest nor attack
+labels. Oracle truth is stored separately and is consumed only by evaluation.
+The operator database has no ground-truth table. Structural tests reject
+detector imports of corruption, oracle, and metrics modules and ensure holdout
+families remain isolated from training and tuning.
 
-The canonical manifest payload hash covers all non-ledger fields. The entry hash commits sequence, previous hash, and payload hash. The generated control ledger provides the (synthetic) independent anchor. These hashes are unkeyed and are not signatures; real deployment requires independently protected anchors and authenticated source systems.
+The canonical payload hash covers non-ledger fields. The entry hash commits the
+sequence, previous hash, and payload hash. The generated control ledger is a
+synthetic independent anchor. Hashes are unkeyed and are not signatures; a real
+deployment needs separately protected anchors and authenticated source systems.
 
 ## Local execution
 
-The backend binds to loopback on port 8000. Vite binds to loopback on port 5173 and proxies API/WebSocket requests to 8000. SQLite, manifests, and reports are local; there are no cloud services or external runtime dependencies.
+The API and demo bind only to loopback. The Vite development server proxies API
+and WebSocket requests locally. SQLite, manifests, and reports remain on the
+machine; there are no cloud services or external runtime dependencies.

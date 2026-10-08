@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -14,10 +14,9 @@ from doom.schema import (
     CONTAINER_LIMITS_KG,
     MANIFEST_COLUMNS,
     OWNERS,
-    PORTS,
     ROUTES,
-    VESSELS,
     VESSEL_SPEED_KNOTS,
+    VESSELS,
     route_distance_nm,
     seal_manifest,
 )
@@ -50,7 +49,7 @@ def generate_dataset(
     rng = random.Random(seed)
     owner_names = tuple(OWNERS)
     identifier_pool = rng.sample(range(1_000_000, 9_999_999), count * 3)
-    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    start = datetime(2026, 1, 1, tzinfo=UTC)
     records: list[dict[str, Any]] = []
     schedules: list[dict[str, Any]] = []
     container_rows: list[dict[str, Any]] = []

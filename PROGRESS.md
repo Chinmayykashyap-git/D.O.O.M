@@ -1,8 +1,8 @@
 # Autonomous level-up progress
 
 ## Current phase
-Phase 3 — Independent holdout attacks and open-set evaluation: **complete**.
-Next: Phase 8 — Demo reliability, commands, and documentation.
+Phase 8 — Demo reliability, commands, and documentation: **complete**.
+Next: Phase 7 — Focused API-backed frontend workflows.
 
 ## Completed phases
 - Phase 0: baseline tests (6 passed), measured seed-1907 2,400-record run (168 attacks; 168 TP; 0 FP; 0 FN), generator surface-leakage test (97.72% accuracy, 0.8663 ROC AUC), and three repeated same-seed byte-hash comparisons (all identical). Audited missing coverage tooling and test gaps.
@@ -11,16 +11,17 @@ Next: Phase 8 — Demo reliability, commands, and documentation.
 - Phase 4: reconstruction now accepts operational witnesses and the control ledger. Missing sequences gain a provenance-labelled partial field recovery from movement, schedule, owner/container registry, customs, and ledger evidence, while remaining `UNRECOVERABLE` if a complete row cannot be proven. Reconstruction evaluation reports status accuracy, field accuracy and coverage by attack type and disposition; removals are scored as removals rather than as field repairs. The standard 2,400-row seed-1907 gate produced 168/168 expected dispositions, 392/392 correct attempted target fields, and 87.50% field coverage overall. Deleted-row recovery covered 238/294 target fields (80.95%); unsupported fields were not guessed. Full tests: 11 passed, with one upstream Starlette/httpx deprecation warning.
 - Phase 6: `doom.evaluation` now evaluates five fixed seeds (19, 41, 75, 2222, 31415), 1,200 records each, disjoint from the calibration training and evaluation seeds. `reports/metrics.json` keeps the known evaluation and three-case isolated holdout in separate sections; `reports/EVAL.md` reports per-attack precision/recall/F1, confusion matrix, reconstruction accuracy/coverage by attack and disposition, mean ± standard deviation, and Phase 2 calibration/ablation results. `TARGETS.md` and a regression test enforce conservative floors derived from those results. Measured known means: precision/recall/F1/type accuracy/status accuracy/attempted-field accuracy = 1.0; field coverage = 0.875. Holdout: 3 TP, 0 FP, 0 FN, explicitly labeled a narrow smoke test. Full tests: 12 passed, with one upstream Starlette/httpx deprecation warning.
 - Phase 3: three families live only in `holdout_attacks/` and are injected by the dedicated `doom.holdout_eval` evaluator, not the known evaluation/training module. Unknown incidents retain the `UNKNOWN ANOMALY` type and expose broken invariants, nearest known evidence-signature category/similarity, and novelty score using fixed Jaccard distance (no holdout fitting). Zero similarity is explicitly not a semantic type attribution. The three holdout cases were detected and classified unknown (3 TP, 0 FP, 0 FN); one case per family is only a smoke gate. Structural isolation, deterministic injection, and output contract tests pass. Full tests: 13 passed, with one upstream Starlette/httpx deprecation warning.
+- Phase 8: added equivalent Makefile and Windows PowerShell targets for evaluation, frontend build, full verification, live demo, offline replay, and HTTP E2E. The demo now checks loopback/port availability, fails explicitly on missing build dependencies, replaces old stream events when replacing batch state, and writes per-run metrics separately from the canonical multi-seed `reports/metrics.json`. Added an API-backed E2E runner, deterministic offline recording/replay, setup and architecture documentation, limitations, and a timed demo script. `.\make.ps1 verify` passed Ruff, mypy (20 source files), frontend TypeScript/production build, full pytest (13 passed; one upstream deprecation warning), E2E, leakage/isolation checks, and metrics regression. Two repeated offline recordings were byte-identical. The full `.\make.ps1 demo` path served the dashboard and API and emitted `UNKNOWN ANOMALY`; occupied-port behavior was explicitly tested. GNU Make is not installed on this Windows host, so the PowerShell runner is the tested equivalent.
 
 ## Open issues
-- Streaming latency/throughput and late/out-of-order semantics have not been measured or implemented.
-- UI remains broader than the requested focused workflows and has no record-tampering interaction or custody screen.
-- Final demo, make targets, coverage, frontend tests, limitations, and timed demo script remain outstanding.
+- Streaming latency/throughput and late/out-of-order semantics have not been measured or implemented; these are Phase 5 work.
+- UI remains broader than the requested focused workflows and has no record-tampering interaction or custody screen; these are Phase 7 items.
 - Open-set novelty is a fixed evidence-signature distance, not a learned novelty model; each holdout family has only one tested instance.
-- Last observed full test run: 13 passed, with one Starlette/httpx upstream deprecation warning.
+- Frontend-specific interaction tests and browser coverage remain limited to the real local HTTP E2E check.
+- Last full Phase 8 test run: 13 passed, with one Starlette/httpx upstream deprecation warning.
 
 ## Next step
-Implement the Phase 8 reliable local workflows and required demo/documentation artifacts. Keep generated numbers anchored to `reports/metrics.json`.
+Implement the focused Phase 7 screens and interactions, then Phase 5 bounded streaming and measured per-event performance. Keep generated evaluation claims anchored to `reports/metrics.json`.
 
 ## Commit log
 | Phase | Commit |
@@ -31,3 +32,4 @@ Implement the Phase 8 reliable local workflows and required demo/documentation a
 | 4 | `be2a113` |
 | 6 | `baf4fe6` |
 | 3 | `7f0a9a0` |
+| 8 | pending |

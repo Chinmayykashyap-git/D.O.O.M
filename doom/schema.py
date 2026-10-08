@@ -7,7 +7,6 @@ import json
 import math
 from typing import Any
 
-
 OWNERS = {
     "Aster Maritime": "AST",
     "Crown Meridian": "CRM",
@@ -96,7 +95,7 @@ def payload_hash(row: dict[str, Any]) -> str:
 
 def chain_hash(sequence: int, previous_hash: str, content_hash: str) -> str:
     return hashlib.sha256(
-        f"{sequence}|{previous_hash}|{content_hash}".encode("utf-8")
+        f"{sequence}|{previous_hash}|{content_hash}".encode()
     ).hexdigest()
 
 

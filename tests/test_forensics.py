@@ -11,14 +11,16 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
+from doom.api import create_app
 from doom.calibration import apply_calibration, load_calibrator
 from doom.corruption import ATTACK_TYPES, inject_attacks
-from doom.api import create_app
 from doom.detectors import ManifestDetector
-from doom.holdout_eval import evaluate_holdout
 from doom.generator import (
-    generate_dataset, make_control_ledger, output_hashes,
+    generate_dataset,
+    make_control_ledger,
+    output_hashes,
 )
+from doom.holdout_eval import evaluate_holdout
 from doom.metrics import evaluate_detection
 from doom.oracle import OracleStore
 from doom.reconstruction import reconstruct_manifest

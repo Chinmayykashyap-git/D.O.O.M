@@ -3,89 +3,127 @@
 **Detection, Observation & Operational Manifest Reconstruction**  
 **LATVERIAN** — *When the manifest cannot be trusted, reconstruct the truth.*
 
-D.O.O.M. is a local-first cargo-manifest forensic demonstrator. It generates a repeatable maritime manifest and independent synthetic witnesses, introduces twelve batch tampering variants, detects suspicious records with explainable checks, records explicit reconstruction decisions, and serves a React/TypeScript operations console and live event stream.
+D.O.O.M. is a local-first cargo-manifest forensics demonstrator. It generates a
+seeded maritime manifest and synthetic operational witnesses, injects batch
+tampering, detects and explains anomalies, records explicit reconstruction
+decisions, and serves a React/TypeScript operations console with a simulated
+live stream.
 
-> The generated records and scores are synthetic hackathon-demo evidence. They are not real shipment records or a production security benchmark.
+> All data, witnesses, and measured results are synthetic. They do not establish
+> detection quality on real shipping records.
 
-## Start here (Windows PowerShell)
+## Requirements
 
-Prerequisites: Python 3.11+, Node.js 20+, and npm.
+- Python 3.11 or newer
+- Node.js and npm
+- Windows PowerShell for the `make.ps1` commands, or GNU Make for the Makefile
+
+## Install and run
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-Set-Location frontend
-npm install
-Set-Location ..
+npm --prefix frontend install
 python -m doom.demo
 ```
 
-The demo creates `data/` and `reports/`, prints the measured batch evaluation, builds the frontend if needed, starts the local dashboard at <http://127.0.0.1:8000>, and injects a previously unseen schema attack into its simulated live stream. Stop it with **Ctrl+C**.
+The demo deterministically regenerates its batch artifacts, evaluates them,
+persists evidence locally, starts the API on `127.0.0.1:8000`, opens the
+dashboard, and produces a streaming-only unknown-schema alert. Stop the server
+with **Ctrl+C**. A busy port or missing runtime dependency is reported as an
+error; the app does not silently choose another port.
 
-Run the generator, detectors, reconstruction, evaluator, and one live unknown-attack event without starting the servers:
+## Verify and evaluate
+
+On Windows PowerShell, use the included target runner:
+
+```powershell
+.\make.ps1 verify
+.\make.ps1 eval
+.\make.ps1 e2e
+```
+
+With GNU Make installed, the equivalent targets are:
+
+```sh
+make verify
+make eval
+make e2e
+```
+
+`verify` runs the multi-seed known and isolated holdout evaluation, frontend
+TypeScript/production build, Ruff, mypy, offline demo, full pytest suite, live
+HTTP E2E, and explicit leakage/isolation/metric regression checks. The
+authoritative measured metrics are in [`reports/metrics.json`](./reports/metrics.json)
+and the rendered tables and scope notes are in [`reports/EVAL.md`](./reports/EVAL.md).
+
+## Offline fallback
+
+Generate and save a real seeded run and its live unknown event:
 
 ```powershell
 python -m doom.demo --no-server
 ```
 
-Select a batch size (at least 30 records):
+Replay the saved report without starting the API or UI:
 
 ```powershell
-python -m doom.demo --records 5000 --no-server
+.\make.ps1 demo-offline
 ```
 
-Regenerate the fixed-seed calibration and detector-ablation reports:
+The equivalent module command is `python -m doom.offline_demo`. To change the
+batch size or seed for a fresh local run:
 
 ```powershell
-python -m doom.calibration
+python -m doom.demo --records 5000 --seed 1907 --no-server
 ```
 
 ## Development
 
-Run the API after generating a batch:
+Start the API after generating the batch:
 
 ```powershell
-python -m doom.demo --no-server
 python -m doom.server
 ```
 
-In another PowerShell terminal, run the Vite UI with API/WebSocket proxy:
+In another terminal, start the Vite development server:
 
 ```powershell
-Set-Location frontend
-npm run dev
+npm --prefix frontend run dev
 ```
 
-Open <http://127.0.0.1:5173>. API documentation is at <http://127.0.0.1:8000/docs>.
-
-## Verification
-
-```powershell
-python -m pytest
-Set-Location frontend
-npm run build
-```
+The dashboard is at <http://127.0.0.1:5173>; API documentation is at
+<http://127.0.0.1:8000/docs>.
 
 ## Forensic trust boundary
 
-The batch detector receives only a corrupted manifest, an ID/sequence/hash control ledger, and generated owner, container, vessel, port-event, and customs witnesses. It does **not** receive the clean manifest or hidden injection log. Attack generation and oracle persistence are isolated in `doom.corruption` and `doom.oracle`; the log lives in a separate `data/oracle/attack_truth.sqlite3` database and is consumed only by `doom.metrics.evaluate_detection`. The evidence database has no injection-truth table, and no API or UI exposes the oracle. Missing IDs are detected through the control ledger; absent payloads are marked `UNRECOVERABLE`, never fabricated.
+The batch detector receives only the observed manifest, an independently
+generated ID/sequence/hash control ledger, and synthetic operational witnesses.
+It never receives the clean manifest or hidden injection log. Attack labels and
+original field values are held in a separate evaluator-only SQLite database;
+the operator evidence database and API contain no oracle table or endpoint.
+Structural tests enforce detector import isolation and holdout separation.
 
-Detectors combine exact/near duplicate analysis, control-ledger payload and sequence validation, registered owner/container/vessel checks, route and event-history consistency, time feasibility, customs value checks, and open-set schema novelty. Standard evidence includes detector, records, field, expected/observed values, contribution, and explanation; incidents include raw hypotheses and a counterfactual. The demo also attaches seed-separated calibrated detection and attack-type estimates from `reports/calibration.json`; their measured reliability applies only to this synthetic generator and seeds. Reconstruction emits a materialized manifest and one explicit decision for every present row and every ledger-confirmed missing ID: `ORIGINAL`, `REPAIRED`, `REMOVED`, or `UNRECOVERABLE`. A repair includes the witness, changed field, prior value, recovered value, and explanation.
+Incidents retain detector evidence, expected-versus-observed values,
+counterfactuals, related records, and reconstruction explanations. Each
+present or ledger-expected record receives an explicit `ORIGINAL`, `REPAIRED`,
+`REMOVED`, or `UNRECOVERABLE` disposition. A partial recovery does not become a
+complete repair when independent evidence cannot establish every required
+field.
 
-## Product modules
+## Project documentation
 
-The console includes Command overview, Manifest integrity, Active incidents, Record forensics, Reconstruction, Attack timeline, Route intelligence, Live event stream, Unknown anomaly watch, and Evaluation metrics. Select a case to inspect its evidence, detectors, confidence, record fields, reconstruction decision, related records, and timeline.
+- [Architecture](./ARCHITECTURE.md)
+- [Data dictionary](./DATA_DICTIONARY.md)
+- [Approach dossier](./APPROACH_DOSSIER.md)
+- [Demo runbook](./DEMO.md)
+- [Three-minute demo script](./DEMO_SCRIPT.md)
+- [Limitations](./LIMITATIONS.md)
+- [Attack taxonomy](./ATTACKS.md)
+- [Measured evaluation](./reports/EVAL.md)
 
-## Generated artifacts
-
-The ignored local `data/` directory contains the clean reference manifest, corrupted input, independent control ledger, synthetic witness tables, the operator evidence database, and an isolated evaluator-only oracle database. The tracked `reports/metrics.json` is generated by the reproducible run. Keep the oracle database out of detector inputs and operational deployments. See [ATTACKS.md](./ATTACKS.md), [DATA_DICTIONARY.md](./DATA_DICTIONARY.md), [ARCHITECTURE.md](./ARCHITECTURE.md), [APPROACH_DOSSIER.md](./APPROACH_DOSSIER.md), and [DEMO.md](./DEMO.md).
-
-## Known limitations
-
-- Synthetically generated data and injected attack mechanisms do not establish effectiveness on real-world manifests.
-- Record deletion detection depends on the integrity of the independent expected-ID ledger. The missing record's contents cannot be recovered without a second trusted copy.
-- Some suspicious values cannot be confidently reconstructed from the remaining evidence and are explicitly quarantined as `UNRECOVERABLE`.
-- Route validation uses a small, static demonstration port registry; it is not a live AIS, customs, or carrier integration.
-- Streaming is a local simulated feed with an in-memory WebSocket fan-out and SQLite event history. It is not a high-availability ingestion service.
-- Authentication, multi-user authorization, production secrets management, and operational hardening are outside this local demo's scope.
+Generated local manifests, witness tables, and SQLite databases live in the
+ignored `data/` directory. Tracked evaluation reports are reproducible outputs;
+do not put the oracle database into detector inputs, operational deployments,
+or API responses.

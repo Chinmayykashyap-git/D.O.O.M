@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import random
-from typing import Any
 
 import pandas as pd
 

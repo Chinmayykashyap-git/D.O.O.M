@@ -168,9 +168,11 @@ def fit_calibration_study(
     type_y: list[str] = []
     for truth, incidents, ids in training:
         matrix = _matrix(incidents, ids, ordered_features)
-        labels = {str(item["record_id"]): str(item["tampering_type"]) for item in truth}
+        labels_by_id = {
+            str(item["record_id"]): str(item["tampering_type"]) for item in truth
+        }
         for index, record_id in enumerate(ids):
-            label = labels.get(record_id)
+            label = labels_by_id.get(record_id)
             binary_x.append(matrix[index])
             binary_y.append(int(label is not None))
             if label is not None:
@@ -209,7 +211,9 @@ def fit_calibration_study(
         _, truth, incidents, ids = _dataset(seed, record_count)
         matrix = _matrix(incidents, ids, ordered_features)
         truth_by_id = {str(item["record_id"]): str(item["tampering_type"]) for item in truth}
-        labels = np.asarray([int(record_id in truth_by_id) for record_id in ids])
+        detection_labels_for_seed = np.asarray([
+            int(record_id in truth_by_id) for record_id in ids
+        ])
         probabilities = _probabilities(matrix, binary_serialized)[:, 1]
         raw_scores = np.asarray([
             max(
@@ -228,17 +232,25 @@ def fit_calibration_study(
         class_actual = [truth_by_id[record_id] for record_id in detected]
         per_seed[str(seed)] = {
             "record_support": len(ids),
-            "attack_support": int(labels.sum()),
-            "detection_brier_raw": round(float(brier_score_loss(labels, raw_scores)), 6),
+            "attack_support": int(detection_labels_for_seed.sum()),
+            "detection_brier_raw": round(float(brier_score_loss(
+                detection_labels_for_seed, raw_scores
+            )), 6),
             "detection_brier_calibrated": round(
-                float(brier_score_loss(labels, probabilities)), 6
+                float(brier_score_loss(detection_labels_for_seed, probabilities)), 6
             ),
-            "detection_ece_raw": round(_expected_calibration_error(labels, raw_scores), 6),
+            "detection_ece_raw": round(_expected_calibration_error(
+                detection_labels_for_seed, raw_scores
+            ), 6),
             "detection_ece_calibrated": round(
-                _expected_calibration_error(labels, probabilities), 6
+                _expected_calibration_error(detection_labels_for_seed, probabilities), 6
             ),
-            "detection_reliability_raw": _reliability_curve(labels, raw_scores),
-            "detection_reliability_calibrated": _reliability_curve(labels, probabilities),
+            "detection_reliability_raw": _reliability_curve(
+                detection_labels_for_seed, raw_scores
+            ),
+            "detection_reliability_calibrated": _reliability_curve(
+                detection_labels_for_seed, probabilities
+            ),
             "type_accuracy": round(float(accuracy_score(class_actual, class_predictions)), 6)
             if class_actual else 0.0,
             "type_log_loss": round(float(log_loss(
@@ -258,7 +270,7 @@ def fit_calibration_study(
                 class_probabilities.max(axis=1),
             ),
         }
-        all_detection_labels.extend(labels.tolist())
+        all_detection_labels.extend(int(label) for label in detection_labels_for_seed)
         all_detection_probabilities.extend(probabilities.tolist())
         all_raw_scores.extend(raw_scores.tolist())
         type_actual.extend(class_actual)

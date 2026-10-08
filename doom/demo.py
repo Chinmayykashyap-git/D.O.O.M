@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
+import socket
 import subprocess
 import sys
 import threading
@@ -29,7 +31,6 @@ from doom.oracle import OracleStore
 from doom.reconstruction import reconstruct_manifest
 from doom.store import EvidenceStore
 from doom.streaming import StreamingService
-
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.environ.get("DOOM_DATA_DIR", str(ROOT / "data"))).resolve()
@@ -87,7 +88,7 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
     }
     reports = ROOT / "reports"
     reports.mkdir(parents=True, exist_ok=True)
-    (reports / "metrics.json").write_text(
+    (reports / "demo-run.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8"
     )
     (DATA_DIR / "evaluation.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
@@ -106,20 +107,42 @@ async def exercise_stream() -> dict:
     return event
 
 
+def _assert_local_port_available(host: str, port: int) -> None:
+    if host not in {"127.0.0.1", "localhost", "::1"}:
+        raise ValueError("D.O.O.M. demo must bind to a loopback host.")
+    if not 1 <= port <= 65535:
+        raise ValueError(f"Invalid API port: {port}")
+    address_family = socket.AF_INET6 if host == "::1" else socket.AF_INET
+    try:
+        with socket.socket(address_family, socket.SOCK_STREAM) as listener:
+            listener.bind((host, port))
+    except OSError as error:
+        raise RuntimeError(
+            f"Cannot start D.O.O.M.: {host}:{port} is unavailable (possibly already in use)."
+        ) from error
+
+
 def serve() -> None:
+    host = os.environ.get("DOOM_API_HOST", "127.0.0.1")
+    try:
+        port = int(os.environ.get("DOOM_API_PORT", "8000"))
+    except ValueError as error:
+        raise ValueError("DOOM_API_PORT must be an integer between 1 and 65535.") from error
+    _assert_local_port_available(host, port)
     frontend = ROOT / "frontend"
     if not (frontend / "dist" / "index.html").exists():
+        npm = "npm.cmd" if sys.platform == "win32" else "npm"
+        if shutil.which(npm) is None:
+            raise RuntimeError("Node.js/npm is required to build the dashboard.")
         completed = subprocess.run(
-            ["npm.cmd" if sys.platform == "win32" else "npm", "run", "build"],
+            [npm, "run", "build"],
             cwd=frontend,
             check=False,
         )
         if completed.returncode:
-            raise RuntimeError("Frontend build failed; run npm install in frontend and retry.")
+            raise RuntimeError("Frontend build failed; install frontend dependencies and retry.")
 
     app = create_app(DATA_DIR / "doom.sqlite3", start_stream=True)
-    host = os.environ.get("DOOM_API_HOST", "127.0.0.1")
-    port = int(os.environ.get("DOOM_API_PORT", "8000"))
     config = uvicorn.Config(app, host=host, port=port, log_level="warning")
     server = uvicorn.Server(config)
     thread = threading.Thread(target=server.run, daemon=True)
@@ -127,13 +150,17 @@ def serve() -> None:
     for _ in range(100):
         if server.started:
             break
+        if not thread.is_alive():
+            break
         time.sleep(0.1)
     if not server.started:
+        server.should_exit = True
+        thread.join(timeout=5)
         raise RuntimeError(f"D.O.O.M. API failed to start on http://{host}:{port}")
 
     app_url = f"http://{host}:{port}"
     print(f"\n  D.O.O.M. command console: {app_url}")
-    print("  Local API:               http://127.0.0.1:8000/docs")
+    print(f"  Local API:               {app_url}/docs")
     print("  Live unknown attack:     injected after the third simulated stream event")
     print("  Press Ctrl+C to end the demonstration.\n")
     webbrowser.open(app_url)
@@ -166,6 +193,18 @@ def main() -> None:
     if args.no_server:
         import asyncio
         event = asyncio.run(exercise_stream())
+        offline_run = {
+            "run_seed": args.seed,
+            "metrics": summary,
+            "live_events": [{
+                "record_id": event["record_id"],
+                "status": event["status"],
+                "incident": event["incident"],
+            }],
+        }
+        (ROOT / "reports" / "demo-offline-run.json").write_text(
+            json.dumps(offline_run, indent=2), encoding="utf-8"
+        )
         print("\nLIVE UNKNOWN ATTACK")
         print(json.dumps({
             "record_id": event["record_id"],
