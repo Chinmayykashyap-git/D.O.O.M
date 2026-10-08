@@ -60,7 +60,9 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
     if calibrator is None:
         raise RuntimeError(f"Calibration artifact was not created at {CALIBRATION_PATH}")
     incidents = apply_calibration(incidents, calibrator)
-    repaired, decisions = reconstruct_manifest(corrupted, incidents)
+    repaired, decisions = reconstruct_manifest(
+        corrupted, incidents, witnesses, control_ledger
+    )
     evaluator_truth = OracleStore(DATA_DIR / "oracle" / "attack_truth.sqlite3").entries()
     metrics = evaluate_detection(
         evaluator_truth, incidents, decisions, repaired.to_dict(orient="records")

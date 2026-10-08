@@ -294,82 +294,152 @@
     "status_correct": 168,
     "status_total": 168,
     "field_accuracy": 1.0,
-    "field_correct": 210,
-    "field_total": 210,
+    "field_coverage": 0.875,
+    "field_correct": 392,
+    "field_total": 392,
     "per_attack": {
       "DELETED": {
         "status_accuracy": 1.0,
-        "field_accuracy": null,
+        "field_accuracy": 1.0,
+        "field_coverage": 0.8095,
         "status_support": 14,
-        "field_support": 0
+        "field_support": 238,
+        "field_target": 294
       },
       "DUPLICATE_EXACT": {
         "status_accuracy": 1.0,
         "field_accuracy": null,
+        "field_coverage": null,
         "status_support": 14,
-        "field_support": 0
+        "field_support": 0,
+        "field_target": 0
       },
       "DUPLICATE_NEAR": {
         "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
+        "field_accuracy": null,
+        "field_coverage": null,
         "status_support": 14,
-        "field_support": 28
+        "field_support": 0,
+        "field_target": 0
       },
       "FABRICATED": {
         "status_accuracy": 1.0,
-        "field_accuracy": 1.0,
+        "field_accuracy": null,
+        "field_coverage": null,
         "status_support": 14,
-        "field_support": 28
+        "field_support": 0,
+        "field_target": 0
       },
       "MODIFIED_VALUE": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 28
+        "field_support": 28,
+        "field_target": 28
       },
       "NEGATIVE_TRANSIT": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 14
+        "field_support": 14,
+        "field_target": 14
       },
       "PORT_SKIP": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 28
+        "field_support": 28,
+        "field_target": 28
       },
       "RELATIONAL_ORPHAN": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 14
+        "field_support": 14,
+        "field_target": 14
       },
       "SLOW_DRIFT": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 28
+        "field_support": 28,
+        "field_target": 28
       },
       "TELEPORTATION": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 14
+        "field_support": 14,
+        "field_target": 14
       },
       "TIMESTAMP_SHIFT": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 14
+        "field_support": 14,
+        "field_target": 14
       },
       "VESSEL_MISMATCH": {
         "status_accuracy": 1.0,
         "field_accuracy": 1.0,
+        "field_coverage": 1.0,
         "status_support": 14,
-        "field_support": 14
+        "field_support": 14,
+        "field_target": 14
       }
-    }
+    },
+    "by_status": {
+      "ORIGINAL": {
+        "status_accuracy": null,
+        "field_accuracy": null,
+        "field_coverage": null,
+        "support": 0,
+        "decision_count": 2274,
+        "field_support": 0,
+        "field_target": 0
+      },
+      "REMOVED": {
+        "status_accuracy": 1.0,
+        "field_accuracy": null,
+        "field_coverage": null,
+        "support": 42,
+        "decision_count": 42,
+        "field_support": 0,
+        "field_target": 0
+      },
+      "REPAIRED": {
+        "status_accuracy": 1.0,
+        "field_accuracy": 1.0,
+        "field_coverage": 1.0,
+        "support": 112,
+        "decision_count": 112,
+        "field_support": 154,
+        "field_target": 154
+      },
+      "UNRECOVERABLE": {
+        "status_accuracy": 1.0,
+        "field_accuracy": 1.0,
+        "field_coverage": 0.8095,
+        "support": 14,
+        "decision_count": 14,
+        "field_support": 238,
+        "field_target": 294
+      }
+    },
+    "disposition_counts": {
+      "ORIGINAL": 2274,
+      "REMOVED": 42,
+      "REPAIRED": 112,
+      "UNRECOVERABLE": 14
+    },
+    "field_scoring": "Accuracy is correct values among attempted target fields; coverage is attempted target fields divided by the ground-truth target-field count. Deleted rows score all recoverable non-hash fields; fields without independent witnesses remain uncovered."
   },
   "generated_records": 2400,
   "corrupted_records": 2428,

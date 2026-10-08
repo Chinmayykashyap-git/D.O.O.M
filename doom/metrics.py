@@ -87,9 +87,13 @@ def _evaluate_reconstruction(
     decision_by_id = {str(item["record_id"]): item for item in decisions}
     record_by_id = {str(item["record_id"]): item for item in reconstructed}
     correct_status = 0
-    field_total = 0
+    field_attempted = 0
     field_correct = 0
     per_attack: dict[str, Counter[str]] = {}
+    per_status: dict[str, Counter[str]] = {}
+    decision_status_counts = Counter(
+        str(item["status"]) for item in decisions
+    )
     for item in truth:
         record_id = str(item["record_id"])
         attack = str(item["tampering_type"])
@@ -103,45 +107,113 @@ def _evaluate_reconstruction(
         )
         status_correct = decision["status"] == expected_status
         correct_status += int(status_correct)
-        counts = per_attack.setdefault(attack, Counter())
-        counts["support"] += 1
-        counts["status_correct"] += int(status_correct)
-        source_id = str(item.get("source_record_id", record_id))
-        reconstructed_row = record_by_id.get(record_id) or record_by_id.get(source_id)
-        if not reconstructed_row:
-            continue
-        for field, values in item.get("modified_fields", {}).items():
-            if field in {
+        attack_counts = per_attack.setdefault(attack, Counter())
+        attack_counts["support"] += 1
+        attack_counts["status_correct"] += int(status_correct)
+        status_counts = per_status.setdefault(str(decision["status"]), Counter())
+        status_counts["support"] += 1
+        status_counts["status_correct"] += int(status_correct)
+        reconstructed_row = record_by_id.get(record_id) or {}
+        recovered_fields = decision.get("recovered_fields", {})
+        if attack == "DELETED":
+            target_fields = {
+                key: value for key, value in item.get("original", {}).items()
+                if key not in {
+                    "record_id", "previous_hash", "payload_hash", "ledger_hash",
+                    "ledger_sequence",
+                }
+            }
+        elif expected_status == "REMOVED":
+            target_fields = {}
+        else:
+            target_fields = {
+                field: values["original"]
+                for field, values in item.get("modified_fields", {}).items()
+                if field not in {
                 "record_id", "previous_hash", "payload_hash", "ledger_hash",
                 "ledger_sequence",
-            }:
+                }
+            }
+        for field, expected_value in target_fields.items():
+            if field in reconstructed_row:
+                observed_value = reconstructed_row[field]
+            elif field in recovered_fields:
+                observed_value = recovered_fields[field]
+            else:
                 continue
-            field_total += 1
-            counts["field_total"] += 1
-            matches = reconstructed_row.get(field) == values["original"]
+            field_attempted += 1
+            attack_counts["field_attempted"] += 1
+            status_counts["field_attempted"] += 1
+            matches = observed_value == expected_value
             field_correct += int(matches)
-            counts["field_correct"] += int(matches)
+            attack_counts["field_correct"] += int(matches)
+            status_counts["field_correct"] += int(matches)
+        attack_counts["field_target"] += len(target_fields)
+        status_counts["field_target"] += len(target_fields)
     per_attack_accuracy = {
         kind: {
             "status_accuracy": round(_ratio(counts["status_correct"], counts["support"]), 4),
             "field_accuracy": (
-                round(_ratio(counts["field_correct"], counts["field_total"]), 4)
-                if counts["field_total"] else None
+                round(_ratio(counts["field_correct"], counts["field_attempted"]), 4)
+                if counts["field_attempted"] else None
+            ),
+            "field_coverage": (
+                round(_ratio(counts["field_attempted"], counts["field_target"]), 4)
+                if counts["field_target"] else None
             ),
             "status_support": counts["support"],
-            "field_support": counts["field_total"],
+            "field_support": counts["field_attempted"],
+            "field_target": counts["field_target"],
         }
         for kind, counts in sorted(per_attack.items())
     }
+    all_statuses = {"ORIGINAL", "REPAIRED", "REMOVED", "UNRECOVERABLE"}
+    all_statuses.update(per_status)
+    per_status_accuracy = {}
+    for status in sorted(all_statuses):
+        counts = per_status.get(status, Counter())
+        per_status_accuracy[status] = {
+            "status_accuracy": (
+                round(_ratio(counts["status_correct"], counts["support"]), 4)
+                if counts["support"] else None
+            ),
+            "field_accuracy": (
+                round(_ratio(counts["field_correct"], counts["field_attempted"]), 4)
+                if counts["field_attempted"] else None
+            ),
+            "field_coverage": (
+                round(_ratio(counts["field_attempted"], counts["field_target"]), 4)
+                if counts["field_target"] else None
+            ),
+            "support": counts["support"],
+            "decision_count": decision_status_counts.get(status, 0),
+            "field_support": counts["field_attempted"],
+            "field_target": counts["field_target"],
+        }
     return {
         "reconstruction": {
             "status_accuracy": round(_ratio(correct_status, len(truth)), 4),
             "status_correct": correct_status,
             "status_total": len(truth),
-            "field_accuracy": round(_ratio(field_correct, field_total), 4),
+            "field_accuracy": round(_ratio(field_correct, field_attempted), 4),
+            "field_coverage": round(
+                _ratio(field_attempted, sum(
+                    counts["field_target"] for counts in per_attack.values()
+                )), 4
+            ),
             "field_correct": field_correct,
-            "field_total": field_total,
+            "field_total": field_attempted,
             "per_attack": per_attack_accuracy,
+            "by_status": per_status_accuracy,
+            "disposition_counts": {
+                status: decision_status_counts.get(status, 0)
+                for status in sorted(all_statuses)
+            },
+            "field_scoring": (
+                "Accuracy is correct values among attempted target fields; coverage is attempted target "
+                "fields divided by the ground-truth target-field count. Deleted rows score all recoverable "
+                "non-hash fields; fields without independent witnesses remain uncovered."
+            ),
         }
     }
 

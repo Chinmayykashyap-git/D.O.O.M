@@ -6,7 +6,7 @@ from typing import Any
 
 import pandas as pd
 
-from doom.schema import OWNERS
+from doom.schema import MANIFEST_COLUMNS, OWNERS
 
 REPAIRABLE_WITNESSES = {
     "control_ledger", "customs_witness", "movement_history", "relational_analysis",
@@ -17,7 +17,10 @@ REMOVABLE_TYPES = {
 
 
 def reconstruct_manifest(
-    records: pd.DataFrame, incidents: list[dict[str, Any]]
+    records: pd.DataFrame,
+    incidents: list[dict[str, Any]],
+    witnesses: Any = None,
+    expected_ledger: pd.DataFrame | list[dict[str, Any]] | None = None,
 ) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     by_id = {str(item["record_id"]): item for item in incidents}
     output = records.copy(deep=True)
@@ -184,9 +187,20 @@ def reconstruct_manifest(
     for incident in incidents:
         if incident.get("record_missing"):
             explanation = (
-                "Expected record and sequence are missing. The event and customs witnesses do not include "
-                "a complete source row, so exact payload restoration would be speculation."
+                "The sequence gap and event history identify the missing shipment. Independent schedule, "
+                "registry, customs, movement, and ledger witnesses recover the listed fields, but the "
+                "original weight, status, current location, and exact event timestamp are not independently "
+                "attested. "
+                "The full manifest row therefore remains unrecoverable rather than being guessed."
             )
+            recovered, provenance = _recover_missing_fields(
+                str(incident["record_id"]), witnesses, expected_ledger
+            )
+            recovery_diff = {
+                field: {"before": "ABSENT", "after": value}
+                for field, value in recovered.items()
+                if field != "record_id"
+            }
             decisions.append({
                 "record_id": incident["record_id"],
                 "status": "UNRECOVERABLE",
@@ -196,13 +210,146 @@ def reconstruct_manifest(
                     for item in incident["evidence"]
                 }),
                 "confidence": incident["confidence"],
-                "before_after": {},
+                "before_after": recovery_diff,
                 "explanation": explanation,
                 "why": explanation,
                 "changes": [],
+                "recovered_fields": recovered,
+                "field_provenance": provenance,
+                "unrecoverable_fields": [
+                    field for field in MANIFEST_COLUMNS if field not in recovered
+                ],
                 "tampering_type": incident["tampering_type"],
             })
     return output, decisions
+
+
+def _recover_missing_fields(
+    record_id: str,
+    witnesses: Any,
+    expected_ledger: pd.DataFrame | list[dict[str, Any]] | None,
+) -> tuple[dict[str, Any], dict[str, str]]:
+    if witnesses is None:
+        witness_rows: dict[str, list[dict[str, Any]]] = {}
+    elif hasattr(witnesses, "as_dict"):
+        witness_rows = witnesses.as_dict()
+    elif isinstance(witnesses, dict):
+        witness_rows = {
+            key: _records(value) for key, value in witnesses.items()
+        }
+    else:
+        raise TypeError("witnesses must be a mapping or WitnessTables value")
+
+    recovered: dict[str, Any] = {"record_id": record_id}
+    provenance: dict[str, str] = {"record_id": "control_ledger:expected_record_id"}
+    ledger_by_id = {
+        str(row["record_id"]): row for row in _records(expected_ledger)
+    }
+    ledger = ledger_by_id.get(record_id)
+    if ledger:
+        for field in (
+            "ledger_sequence", "previous_hash", "payload_hash", "ledger_hash",
+        ):
+            recovered[field] = _plain(ledger.get(field))
+            provenance[field] = f"control_ledger:{field}"
+
+    movements = [
+        row for row in witness_rows.get("movement_history", [])
+        if str(row.get("record_id")) == record_id
+    ]
+    if not movements:
+        return recovered, provenance
+    movements.sort(key=lambda row: str(row.get("event_sequence", "")))
+    movement = movements[0]
+    shipment_id = str(movement.get("shipment_id", ""))
+    container_id = str(movement.get("container_id", ""))
+    recovered.update({"shipment_id": shipment_id, "container_id": container_id})
+    provenance.update({
+        "shipment_id": "movement_history:shipment_id",
+        "container_id": "movement_history:container_id",
+    })
+
+    schedules = {
+        str(row.get("shipment_id")): row
+        for row in witness_rows.get("vessel_schedule", [])
+    }
+    schedule = schedules.get(shipment_id)
+    if schedule:
+        for field, source in (
+            ("vessel_id", "vessel_id"),
+            ("planned_route", "route"),
+            ("departure_ts", "departure_ts"),
+            ("arrival_ts", "arrival_ts"),
+            ("speed_class", "speed_class"),
+        ):
+            if schedule.get(source) is not None:
+                recovered[field] = _plain(schedule[source])
+                provenance[field] = f"vessel_schedule:{source}"
+        if schedule.get("route"):
+            from doom.schema import route_distance_nm
+
+            recovered["route_distance_nm"] = route_distance_nm(
+                str(schedule["route"]).split("|")
+            )
+            provenance["route_distance_nm"] = "derived:vessel_schedule.route"
+            recovered["origin"] = str(schedule["route"]).split("|")[0]
+            recovered["destination"] = str(schedule["route"]).split("|")[-1]
+            provenance["origin"] = "derived:vessel_schedule.route"
+            provenance["destination"] = "derived:vessel_schedule.route"
+
+    containers = {
+        str(row.get("container_id")): row
+        for row in witness_rows.get("container_registry", [])
+    }
+    container = containers.get(container_id)
+    if container:
+        for field in ("container_type", "owner_id"):
+            if container.get(field) is not None:
+                recovered[field] = _plain(container[field])
+                provenance[field] = f"container_registry:{field}"
+        owner_id = str(container.get("owner_id", ""))
+        owners = {
+            str(row.get("owner_id")): row.get("owner_name")
+            for row in witness_rows.get("owner_registry", [])
+        }
+        if owners.get(owner_id):
+            recovered["owner"] = str(owners[owner_id])
+            recovered["container_owner"] = str(owners[owner_id])
+            provenance["owner"] = "owner_registry:owner_name"
+            provenance["container_owner"] = "owner_registry:owner_name"
+
+    customs = {
+        str(row.get("shipment_id")): row
+        for row in witness_rows.get("customs_entries", [])
+    }.get(shipment_id)
+    if customs:
+        for field in ("declared_value_usd", "quantity", "destination"):
+            if customs.get(field) is not None:
+                recovered[field] = _plain(customs[field])
+                provenance[field] = f"customs_entries:{field}"
+        quantity = float(customs.get("quantity") or 0)
+        value = float(customs.get("declared_value_usd") or 0)
+        if quantity > 0:
+            recovered["unit_price_usd"] = round(value / quantity, 2)
+            provenance["unit_price_usd"] = "derived:customs_entries.value_and_quantity"
+
+    return recovered, provenance
+
+
+def _records(value: Any) -> list[dict[str, Any]]:
+    if value is None:
+        return []
+    if isinstance(value, pd.DataFrame):
+        return value.to_dict(orient="records")
+    return list(value)
+
+
+def _plain(value: Any) -> Any:
+    if pd.isna(value):
+        return None
+    if hasattr(value, "item"):
+        return value.item()
+    return value
 
 
 def _safe(value: Any) -> Any:

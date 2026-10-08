@@ -191,7 +191,9 @@ def test_detector_detects_and_classifies_known_synthetic_taxonomy():
 def test_reconstruction_is_explained_and_duplicate_canonical_is_retained():
     clean, witnesses, observed, oracle, ledger = generated(300, 75)
     incidents = detect(clean, witnesses, observed, ledger)
-    reconstructed, decisions = reconstruct_manifest(observed, incidents)
+    reconstructed, decisions = reconstruct_manifest(
+        observed, incidents, witnesses, ledger
+    )
     by_id = {item["record_id"]: item for item in decisions}
 
     assert {item["status"] for item in decisions} >= {
@@ -208,12 +210,30 @@ def test_reconstruction_is_explained_and_duplicate_canonical_is_retained():
     )
     assert by_id[duplicate["record_id"]]["status"] == "REMOVED"
     assert duplicate["source_record_id"] in set(reconstructed["record_id"])
+    deleted = next(item for item in oracle if item["tampering_type"] == "DELETED")
+    deletion_decision = by_id[deleted["record_id"]]
+    assert deletion_decision["status"] == "UNRECOVERABLE"
+    assert deletion_decision["recovered_fields"]["shipment_id"] == (
+        deleted["original"]["shipment_id"]
+    )
+    assert deletion_decision["recovered_fields"]["declared_value_usd"] == (
+        deleted["original"]["declared_value_usd"]
+    )
+    assert {"weight_kg", "status", "current_location", "event_ts"} <= set(
+        deletion_decision["unrecoverable_fields"]
+    )
+    assert deletion_decision["field_provenance"]["shipment_id"].startswith(
+        "movement_history:"
+    )
+    assert deletion_decision["before_after"]["ledger_sequence"]["before"] == "ABSENT"
 
 
 def test_metrics_are_truth_scoped_and_reconstruction_is_field_scored():
     clean, witnesses, observed, oracle, ledger = generated(360, 202)
     incidents = detect(clean, witnesses, observed, ledger)
-    reconstructed, decisions = reconstruct_manifest(observed, incidents)
+    reconstructed, decisions = reconstruct_manifest(
+        observed, incidents, witnesses, ledger
+    )
     metrics = evaluate_detection(
         oracle, incidents, decisions, reconstructed.to_dict(orient="records")
     )
@@ -223,6 +243,17 @@ def test_metrics_are_truth_scoped_and_reconstruction_is_field_scored():
     assert metrics["false_positive"] >= 0
     assert metrics["reconstruction"]["field_total"] > 0
     assert metrics["reconstruction"]["per_attack"]
+    assert metrics["reconstruction"]["by_status"]
+    assert 0 < metrics["reconstruction"]["field_coverage"] < 1
+    assert "field_coverage" in metrics["reconstruction"]["per_attack"]["DELETED"]
+    assert metrics["reconstruction"]["per_attack"]["FABRICATED"]["field_accuracy"] is None
+    assert {"REPAIRED", "REMOVED", "UNRECOVERABLE"} <= set(
+        metrics["reconstruction"]["by_status"]
+    )
+    assert set(metrics["reconstruction"]["by_status"]) == {
+        "ORIGINAL", "REPAIRED", "REMOVED", "UNRECOVERABLE",
+    }
+    assert metrics["reconstruction"]["by_status"]["ORIGINAL"]["status_accuracy"] is None
     assert "not a production benchmark" in metrics["evaluation_scope"]
 
 
@@ -305,7 +336,9 @@ def test_api_evidence_reconstruction_and_oracle_db_isolation(tmp_path):
         detect(clean, witnesses, observed, ledger),
         load_calibrator(Path(__file__).resolve().parents[1] / "reports" / "calibration.json"),
     )
-    reconstructed, decisions = reconstruct_manifest(observed, incidents)
+    reconstructed, decisions = reconstruct_manifest(
+        observed, incidents, witnesses, ledger
+    )
     metrics = evaluate_detection(
         oracle, incidents, decisions, reconstructed.to_dict(orient="records")
     )
