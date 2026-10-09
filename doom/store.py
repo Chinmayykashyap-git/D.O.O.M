@@ -189,6 +189,101 @@ class EvidenceStore:
             ).fetchall()
         return [json.loads(row["payload"]) for row in reversed(rows)]
 
+    def upsert_record(self, record: dict[str, Any]) -> None:
+        record_id = str(record.get("record_id", ""))
+        with self.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO records(record_id, payload) VALUES(?, ?)
+                ON CONFLICT(record_id) DO UPDATE SET payload=excluded.payload
+                """,
+                (record_id, json.dumps(_json_safe(record))),
+            )
+
+    def upsert_incident(self, incident: dict[str, Any]) -> None:
+        record_id = str(incident.get("record_id", ""))
+        with self.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO incidents(record_id, payload) VALUES(?, ?)
+                ON CONFLICT(record_id) DO UPDATE SET payload=excluded.payload
+                """,
+                (record_id, json.dumps(_json_safe(incident))),
+            )
+
+    def delete_incident(self, record_id: str) -> None:
+        with self.connect() as connection:
+            connection.execute(
+                "DELETE FROM incidents WHERE record_id=?",
+                (record_id,),
+            )
+
+    def upsert_reconstruction(self, decision: dict[str, Any]) -> None:
+        record_id = str(decision.get("record_id", ""))
+        with self.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO reconstruction(record_id, payload) VALUES(?, ?)
+                ON CONFLICT(record_id) DO UPDATE SET payload=excluded.payload
+                """,
+                (record_id, json.dumps(_json_safe(decision))),
+            )
+
+    def upsert_reconstructed_record(self, record: dict[str, Any]) -> None:
+        record_id = str(record.get("record_id", ""))
+        with self.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO reconstructed_records(record_id, payload) VALUES(?, ?)
+                ON CONFLICT(record_id) DO UPDATE SET payload=excluded.payload
+                """,
+                (record_id, json.dumps(_json_safe(record))),
+            )
+
+    def get_sar(self) -> dict[str, Any]:
+        """Generate a real-time Suspicious Activity Report (SAR) synchronized with the current store."""
+        from datetime import datetime, timezone
+        incidents = self.incidents(limit=10000)
+        records = self.records(limit=10000)
+        reconstruction = self.reconstruction()
+
+        critical = [inc for inc in incidents if inc.get("risk_score", 0) >= 90]
+        high = [inc for inc in incidents if 75 <= inc.get("risk_score", 0) < 90]
+        medium = [inc for inc in incidents if 55 <= inc.get("risk_score", 0) < 75]
+        low = [inc for inc in incidents if inc.get("risk_score", 0) < 55]
+
+        type_breakdown: dict[str, int] = {}
+        for inc in incidents:
+            t = str(inc.get("tampering_type", "UNKNOWN"))
+            type_breakdown[t] = type_breakdown.get(t, 0) + 1
+
+        now_utc = datetime.now(timezone.utc)
+        return {
+            "report_id": f"SAR-{now_utc.strftime('%Y%m%d-%H%M%S')}",
+            "generated_at": now_utc.isoformat(),
+            "executive_summary": {
+                "total_records_monitored": len(records),
+                "total_incidents_active": len(incidents),
+                "critical_threats": len(critical),
+                "high_threats": len(high),
+                "medium_threats": len(medium),
+                "low_threats": len(low),
+                "fleet_integrity_percentage": round(
+                    100 * (1 - len(incidents) / max(len(records), 1)), 2
+                ),
+                "reconstruction_coverage": len(reconstruction),
+            },
+            "type_breakdown": dict(sorted(type_breakdown.items())),
+            "top_critical_incidents": critical[:20],
+            "recommended_actions": [
+                "Quarantine records with active cryptographic hash chain breaks."
+                if any(inc.get("tampering_type") == "UNKNOWN ANOMALY" for inc in incidents)
+                else "Maintain standard surveillance.",
+                "Verify customs discrepancy items against external witness declaration.",
+                "Review automated provisional repairs before releasing manifest to port authority.",
+            ],
+        }
+
 
 def _json_safe(value: Any) -> Any:
     if isinstance(value, dict):

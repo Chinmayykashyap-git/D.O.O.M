@@ -33,20 +33,31 @@ from doom.store import EvidenceStore
 from doom.streaming import StreamingService
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = Path(os.environ.get("DOOM_DATA_DIR", str(ROOT / "data"))).resolve()
+
+
+def get_data_dir() -> Path:
+    return Path(os.environ.get("DOOM_DATA_DIR", str(ROOT / "data"))).resolve()
+
+
+DATA_DIR = get_data_dir()
 CALIBRATION_PATH = ROOT / "reports" / "calibration.json"
 
 
-def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
+def prepare_demo(
+    count: int = 2400,
+    seed: int = 1907,
+    data_dir: Path | str | None = None,
+) -> dict:
     clean, witnesses = generate_dataset(count=count, seed=seed)
     corrupted, hidden_truth = inject_attacks(clean, seed=seed + 1)
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    write_manifest(clean, DATA_DIR / "clean_manifest.csv")
-    write_manifest(corrupted, DATA_DIR / "corrupted_manifest.csv")
+    target_data_dir = Path(data_dir).resolve() if data_dir is not None else get_data_dir()
+    target_data_dir.mkdir(parents=True, exist_ok=True)
+    write_manifest(clean, target_data_dir / "clean_manifest.csv")
+    write_manifest(corrupted, target_data_dir / "corrupted_manifest.csv")
     control_ledger = make_control_ledger(clean)
-    control_ledger.to_csv(DATA_DIR / "control_ledger.csv", index=False, lineterminator="\n")
-    write_witness_tables(witnesses, DATA_DIR)
-    OracleStore(DATA_DIR / "oracle" / "attack_truth.sqlite3").replace(hidden_truth)
+    control_ledger.to_csv(target_data_dir / "control_ledger.csv", index=False, lineterminator="\n")
+    write_witness_tables(witnesses, target_data_dir)
+    OracleStore(target_data_dir / "oracle" / "attack_truth.sqlite3").replace(hidden_truth)
     detector = ManifestDetector()
     incidents = detector.detect(
         corrupted,
@@ -64,11 +75,11 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
     repaired, decisions = reconstruct_manifest(
         corrupted, incidents, witnesses, control_ledger
     )
-    evaluator_truth = OracleStore(DATA_DIR / "oracle" / "attack_truth.sqlite3").entries()
+    evaluator_truth = OracleStore(target_data_dir / "oracle" / "attack_truth.sqlite3").entries()
     metrics = evaluate_detection(
         evaluator_truth, incidents, decisions, repaired.to_dict(orient="records")
     )
-    EvidenceStore(DATA_DIR / "doom.sqlite3").replace_batch(
+    EvidenceStore(target_data_dir / "doom.sqlite3").replace_batch(
         corrupted, repaired, incidents, decisions, metrics
     )
     summary = {
@@ -87,11 +98,14 @@ def prepare_demo(count: int = 2400, seed: int = 1907) -> dict:
         "calibration_evaluation_seeds": calibrator["study"]["evaluation_seeds"],
     }
     reports = ROOT / "reports"
-    reports.mkdir(parents=True, exist_ok=True)
-    (reports / "demo-run.json").write_text(
-        json.dumps(summary, indent=2), encoding="utf-8"
-    )
-    (DATA_DIR / "evaluation.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    try:
+        reports.mkdir(parents=True, exist_ok=True)
+        (reports / "demo-run.json").write_text(
+            json.dumps(summary, indent=2), encoding="utf-8"
+        )
+    except OSError:
+        pass
+    (target_data_dir / "evaluation.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
 
 

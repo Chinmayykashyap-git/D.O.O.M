@@ -20,6 +20,13 @@ from doom.generator import generate_clean_manifest
 from doom.store import EvidenceStore
 
 
+CORE_TAMPERING_FIELDS = {
+    "container_id", "declared_value_usd", "unit_price_usd", "weight_kg",
+    "owner_id", "owner", "vessel_id", "origin", "destination",
+    "payload_hash", "previous_hash", "ledger_hash", "speed_class",
+}
+
+
 class StreamingService:
     def __init__(
         self,
@@ -36,6 +43,7 @@ class StreamingService:
         self._trusted_first_observation: OrderedDict[
             str, dict[str, Any]
         ] = OrderedDict()
+        self._processed_events: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self._memory_limit = memory_limit
         self._persistence_limit = persistence_limit
         self.client_limit = client_limit
@@ -49,33 +57,123 @@ class StreamingService:
         event_id: str | None = None,
         timestamp: str | None = None,
     ) -> dict[str, Any]:
+        started = time.perf_counter()
+
+        # Idempotence guard: if this event_id was already processed, return cached payload
+        if event_id and event_id in self._processed_events:
+            cached = dict(self._processed_events[event_id])
+            cached["idempotent_replay"] = True
+            return cached
+
+        # Malformed event guard: handle malformed or non-dict payloads gracefully
+        if not isinstance(record, dict) or not record.get("record_id"):
+            self.sequence += 1
+            assigned_id = str(record.get("record_id")) if isinstance(record, dict) and record.get("record_id") else f"MALFORMED-{self.sequence:06d}"
+            observed = dict(record) if isinstance(record, dict) else {"raw_payload": str(record)}
+            observed["record_id"] = assigned_id
+            evidence = [{
+                "detector_id": "schema_validator",
+                "evidence_code": "MALFORMED_PAYLOAD",
+                "field": "record_id" if isinstance(record, dict) else "payload",
+                "expected": "valid dict with non-empty record_id",
+                "observed": type(record).__name__,
+                "score_contribution": 0.95,
+                "explanation": "Event stream rejected or quarantined malformed payload structure.",
+            }]
+            incident = {
+                "record_id": assigned_id,
+                "tampering_type": "UNKNOWN ANOMALY",
+                "unknown_analysis": self.detector.analyze_unknown(evidence),
+                "type_probabilities": {"UNKNOWN ANOMALY": 1.0},
+                "risk_score": 95,
+                "confidence": 0.90,
+                "evidence": evidence,
+                "detectors": ["schema_validator"],
+                "related_records": [],
+                "counterfactual": {
+                    "action": "quarantine",
+                    "field": "record_id",
+                    "expected": "valid identifier",
+                    "observed": None,
+                    "explanation": "Quarantine unparseable or malformed stream entry.",
+                },
+                "record_missing": False,
+            }
+            reconstruction = {
+                "record_id": assigned_id,
+                "status": "UNRECOVERABLE",
+                "method": "malformed_quarantine",
+                "evidence_relied_on": ["schema_validator:MALFORMED_PAYLOAD"],
+                "confidence": 0.90,
+                "before_after": {},
+                "explanation": "Payload was malformed; cannot reconstruct authentic fields.",
+                "why": "Payload was malformed; cannot reconstruct authentic fields.",
+                "changes": [],
+                "provisional": False,
+            }
+            self.last_latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
+            event = {
+                "event_id": event_id or str(uuid4()),
+                "timestamp": timestamp or datetime.now(UTC).isoformat(),
+                "sequence": self.sequence,
+                "record_id": assigned_id,
+                "status": "ANOMALY",
+                "incident": incident,
+                "record": observed,
+                "live_reconstruction": reconstruction,
+            }
+            self.recent.append(event)
+            self.store.add_stream_event(event, limit=self._persistence_limit)
+            self.store.upsert_record(observed)
+            self.store.upsert_incident(incident)
+            self.store.upsert_reconstruction(reconstruction)
+            if event_id:
+                self._processed_events[event_id] = event
+            return event
+
         record_id = str(record.get("record_id", "UNKNOWN"))
         observed = dict(record)
         incident = self.detector.detect_record(observed)
         prior = self._trusted_first_observation.get(record_id)
+        if prior is None:
+            prior = self.store.record(record_id)
+
         changed_fields = (
             _changed_fields(prior, observed) if prior is not None else []
         )
+
+        # Detect statistical novelty for unanchored incoming records if no rule-based anomaly exists
+        if incident is None and not changed_fields:
+            statistical_anomaly = self.detector.detect_statistical_novelty(observed)
+            if statistical_anomaly is not None:
+                incident = statistical_anomaly
+
         if changed_fields and prior is not None:
-            evidence = _mutation_evidence(record_id, prior, observed, changed_fields)
-            if incident is not None:
-                evidence = [*incident["evidence"], *evidence]
-            incident = {
-                "record_id": record_id,
-                "tampering_type": "UNKNOWN ANOMALY",
-                "unknown_analysis": self.detector.analyze_unknown(evidence),
-                "type_probabilities": {"UNKNOWN ANOMALY": 0.95},
-                "risk_score": 90,
-                "confidence": 0.8 if prior is not None else 0.5,
-                "evidence": evidence,
-                "detectors": sorted({item["detector_id"] for item in evidence}),
-                "related_records": [],
-                "counterfactual": (
-                    "If the first independently observed event is trusted, restore the "
-                    "record fields to that snapshot."
-                ),
-                "record_missing": False,
-            }
+            # Check if this modification touches critical invariant fields
+            is_tampering = any(field in CORE_TAMPERING_FIELDS for field in changed_fields) or (incident is not None)
+            if is_tampering:
+                evidence = _mutation_evidence(record_id, prior, observed, changed_fields)
+                if incident is not None:
+                    evidence = [*incident["evidence"], *evidence]
+                incident = {
+                    "record_id": record_id,
+                    "tampering_type": "UNKNOWN ANOMALY",
+                    "unknown_analysis": self.detector.analyze_unknown(evidence),
+                    "type_probabilities": {"UNKNOWN ANOMALY": 0.95},
+                    "risk_score": 90,
+                    "confidence": 0.8 if prior is not None else 0.5,
+                    "evidence": evidence,
+                    "detectors": sorted({item["detector_id"] for item in evidence}),
+                    "related_records": [],
+                    "counterfactual": (
+                        "If the first independently observed event is trusted, restore the "
+                        "record fields to that snapshot."
+                    ),
+                    "record_missing": False,
+                }
+            else:
+                # Benign progression: suppress alert, keep incident cleared
+                incident = None
 
         if incident is None:
             reconstruction = {
@@ -91,6 +189,9 @@ class StreamingService:
                 "provisional": False,
             }
             if prior is None:
+                self._remember(record_id, observed)
+            else:
+                # Update snapshot with benign operational progression
                 self._remember(record_id, observed)
         elif changed_fields and prior is not None:
             diff = {
@@ -140,6 +241,7 @@ class StreamingService:
             }
 
         self.sequence += 1
+        self.last_latency_ms = round((time.perf_counter() - started) * 1000.0, 3)
         event = {
             "event_id": event_id or str(uuid4()),
             "timestamp": timestamp or datetime.now(UTC).isoformat(),
@@ -152,6 +254,27 @@ class StreamingService:
         }
         self.recent.append(event)
         self.store.add_stream_event(event, limit=self._persistence_limit)
+
+        # Synchronize store tables: records, incidents, reconstruction, reconstructed_records
+        self.store.upsert_record(observed)
+        if incident is not None:
+            self.store.upsert_incident(incident)
+            self.store.upsert_reconstruction(reconstruction)
+            if reconstruction.get("reconstructed_record"):
+                self.store.upsert_reconstructed_record(reconstruction["reconstructed_record"])
+            else:
+                self.store.upsert_reconstructed_record(observed)
+        else:
+            self.store.delete_incident(record_id)
+            self.store.upsert_reconstruction(reconstruction)
+            self.store.upsert_reconstructed_record(observed)
+
+        # Retain for idempotence checking
+        if event_id:
+            self._processed_events[event_id] = event
+            if len(self._processed_events) > 500:
+                self._processed_events.popitem(last=False)
+
         for queue in tuple(self.clients):
             if queue.full():
                 try:

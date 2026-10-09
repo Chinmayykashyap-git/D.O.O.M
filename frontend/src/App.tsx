@@ -124,7 +124,7 @@ function AppShell() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
-  const [liveStatus, setLiveStatus] = useState<'CONNECTING' | 'CONNECTED' | 'RETRYING'>('CONNECTING');
+  const [liveStatus, setLiveStatus] = useState<'CONNECTING' | 'CONNECTED' | 'RETRYING' | 'POLLING'>('CONNECTING');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -190,42 +190,91 @@ function AppShell() {
     return () => clearInterval(t);
   }, [refresh]);
 
-  // WebSocket live stream
+  // WebSocket live stream with automatic polling fallback
   useEffect(() => {
     let active = true;
     let socket: WebSocket | undefined;
     let retry: ReturnType<typeof setTimeout> | undefined;
+    let pollTimer: ReturnType<typeof setInterval> | undefined;
+    let attempts = 0;
 
     void API.json<LiveEvent[]>('/api/stream/events')
       .then((events) => { if (active) setLiveEvents(events.slice(-100).reverse()); })
       .catch(() => {});
 
+    const startPolling = () => {
+      if (!active) return;
+      setLiveStatus('POLLING');
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => {
+        if (!active) return;
+        API.json<LiveEvent[]>('/api/stream/events?limit=50')
+          .then((events) => {
+            if (active && events.length) {
+              setLiveEvents((cur) => {
+                let merged = cur;
+                for (const ev of events) {
+                  merged = mergeLive(merged, ev);
+                }
+                return merged;
+              });
+            }
+          })
+          .catch(() => {});
+      }, 2_500);
+    };
+
     const connect = () => {
       if (!active) return;
+      if (attempts >= 2) {
+        startPolling();
+        return;
+      }
       setLiveStatus((s) => s === 'CONNECTED' ? s : 'CONNECTING');
       const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       socket = new WebSocket(`${proto}//${window.location.host}/api/stream`);
-      socket.onopen = () => { if (active) setLiveStatus('CONNECTED'); };
+      socket.onopen = () => {
+        if (active) {
+          attempts = 0;
+          if (pollTimer) clearInterval(pollTimer);
+          setLiveStatus('CONNECTED');
+        }
+      };
       socket.onmessage = ({ data }: MessageEvent<string>) => {
         try {
-          if (active) setLiveEvents((cur) => mergeLive(cur, JSON.parse(data) as LiveEvent));
+          if (active) {
+            const parsed = JSON.parse(data) as LiveEvent;
+            setLiveEvents((cur) => mergeLive(cur, parsed));
+            if (parsed.status === 'ANOMALY') {
+              void refresh();
+            }
+          }
         } catch { /* ignore parse errors */ }
       };
-      socket.onerror = () => socket?.close();
+      socket.onerror = () => {
+        attempts += 1;
+        socket?.close();
+      };
       socket.onclose = () => {
         if (active) {
-          setLiveStatus('RETRYING');
-          retry = setTimeout(connect, 2_000);
+          if (attempts >= 2) {
+            startPolling();
+          } else {
+            setLiveStatus('RETRYING');
+            retry = setTimeout(connect, 2_000);
+          }
         }
       };
     };
     connect();
+
     return () => {
       active = false;
       clearTimeout(retry);
+      if (pollTimer) clearInterval(pollTimer);
       socket?.close();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refresh]);
 
   const criticalCount = overview?.critical_count ?? 0;
   const posture = criticalCount ? 'critical' : incidents.length ? 'guarded' : 'nominal';

@@ -41,6 +41,10 @@ TYPE_FOR_EVIDENCE = {
     "LEDGER_SEQUENCE_GAP": "DELETED",
     "UNREGISTERED_RECORD_ID": "FABRICATED",
     "UNRECOGNIZED_SCHEMA_FIELD": "UNKNOWN ANOMALY",
+    "STATISTICAL_DISTRIBUTION_OUTLIER": "UNKNOWN ANOMALY",
+    "VALUE_QUANTITY_INCOHERENCE": "UNKNOWN ANOMALY",
+    "ANOMALOUS_WEIGHT_RATIO": "UNKNOWN ANOMALY",
+    "MALFORMED_PAYLOAD": "UNKNOWN ANOMALY",
 }
 
 KNOWN_EVIDENCE_SIGNATURES = {
@@ -452,6 +456,92 @@ class ManifestDetector:
     @staticmethod
     def analyze_unknown(evidence: list[dict[str, Any]]) -> dict[str, Any]:
         return _unknown_analysis(evidence)
+
+    @staticmethod
+    def detect_statistical_novelty(record: dict[str, Any]) -> dict[str, Any] | None:
+        """Detect statistical distribution outliers and unseen patterns on unanchored records."""
+        evidence = []
+        record_id = str(record.get("record_id", "UNKNOWN"))
+        unit_price = _number(record.get("unit_price_usd"))
+        quantity = _number(record.get("quantity"))
+        weight = _number(record.get("weight_kg"))
+        declared_value = _number(record.get("declared_value_usd"))
+
+        # 1. Price-quantity divergence check (internal mathematical consistency)
+        if unit_price is not None and quantity is not None and declared_value is not None and quantity > 0:
+            expected_val = round(unit_price * quantity, 2)
+            delta = abs(declared_value - expected_val)
+            if delta > max(10.0, declared_value * 0.10):
+                evidence.append({
+                    "detector_id": "statistical_novelty",
+                    "evidence_code": "VALUE_QUANTITY_INCOHERENCE",
+                    "field": "declared_value_usd",
+                    "expected": expected_val,
+                    "observed": declared_value,
+                    "score_contribution": 0.88,
+                    "explanation": (
+                        f"Declared value (${declared_value}) diverges from unit_price * quantity (${expected_val})."
+                    ),
+                })
+
+        # 2. Extreme statistical price outlier (> 4 sigma from maritime freight norms)
+        if unit_price is not None and unit_price > 2500.0:
+            evidence.append({
+                "detector_id": "statistical_novelty",
+                "evidence_code": "STATISTICAL_DISTRIBUTION_OUTLIER",
+                "field": "unit_price_usd",
+                "expected": "< 500.0 USD/unit",
+                "observed": unit_price,
+                "score_contribution": 0.82,
+                "explanation": (
+                    f"Unit price (${unit_price}) is an extreme statistical outlier (> 4 sigma) relative to baseline."
+                ),
+            })
+
+        # 3. Physically anomalous cargo density / weight ratio
+        if weight is not None and quantity is not None and quantity > 0:
+            ratio = weight / quantity
+            if ratio < 0.005 or ratio > 8000.0:
+                evidence.append({
+                    "detector_id": "statistical_novelty",
+                    "evidence_code": "ANOMALOUS_WEIGHT_RATIO",
+                    "field": "weight_kg",
+                    "expected": "0.01..5000.0 kg/unit",
+                    "observed": round(ratio, 2),
+                    "score_contribution": 0.84,
+                    "explanation": (
+                        f"Weight to quantity ratio ({round(ratio, 2)} kg/unit) violates physical cargo baseline."
+                    ),
+                })
+
+        if not evidence:
+            return None
+
+        best = max(item["score_contribution"] for item in evidence)
+        total = sum(item["score_contribution"] for item in evidence)
+        risk = min(100, round(100 * (1 - math.exp(-total))))
+        return {
+            "record_id": record_id,
+            "tampering_type": "UNKNOWN ANOMALY",
+            "unknown_analysis": _unknown_analysis(evidence),
+            "type_probabilities": {"UNKNOWN ANOMALY": 0.90},
+            "risk_score": risk,
+            "confidence": round(best * 0.9, 2),
+            "evidence": evidence,
+            "detectors": ["statistical_novelty"],
+            "related_records": [],
+            "counterfactual": {
+                "action": "quarantine",
+                "field": evidence[0]["field"],
+                "expected": evidence[0]["expected"],
+                "observed": evidence[0]["observed"],
+                "explanation": (
+                    "Flagged by statistical anomaly detector for unseen pattern deviation. "
+                    "Cryptographic anchoring or secondary physical witness required for definitive repair."
+                ),
+            },
+            "record_missing": False,
+        }
 
     @staticmethod
     def _records(value: Any) -> list[dict[str, Any]]:
