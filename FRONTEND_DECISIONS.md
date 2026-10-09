@@ -48,3 +48,4 @@
 - `vite build` bundles production assets cleanly (`dist/` directory generated).
 - Frontend Vitest suite (`npm test`) passes 100% (4/4 tests).
 - Backend Pytest suite (`python -m pytest`) passes 100% (15/15 tests).
+
