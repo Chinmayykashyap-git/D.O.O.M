@@ -22,7 +22,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { ReactNode } from 'react';
 import {
   BrowserRouter,
   Link,
@@ -56,7 +55,6 @@ import {
   Shield,
   ShieldCheck,
   Sparkles,
-  X,
   Zap,
 } from 'lucide-react';
 
@@ -136,7 +134,6 @@ function AppShell() {
   const [showHelp, setShowHelp] = useState(false);
   const [utcTime, setUtcTime] = useState(fmt.utc());
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   // Live UTC clock
@@ -206,7 +203,7 @@ function AppShell() {
     const connect = () => {
       if (!active) return;
       setLiveStatus((s) => s === 'CONNECTED' ? s : 'CONNECTING');
-      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       socket = new WebSocket(`${proto}//${window.location.host}/api/stream`);
       socket.onopen = () => { if (active) setLiveStatus('CONNECTED'); };
       socket.onmessage = ({ data }: MessageEvent<string>) => {
@@ -234,16 +231,16 @@ function AppShell() {
   const posture = criticalCount ? 'critical' : incidents.length ? 'guarded' : 'nominal';
 
   const NAV_ITEMS: NavItem[] = [
-    { path: '/', label: 'OVERVIEW', detail: 'Command posture', icon: ShieldCheck },
-    { path: '/incidents', label: 'INCIDENTS', detail: 'Case register', icon: AlertTriangle, badge: incidents.length || undefined },
-    { path: '/forensics', label: 'FORENSICS', detail: 'Evidence & reconstruction', icon: FileSearch },
-    { path: '/live', label: 'LIVE WATCH', detail: 'Streaming feed', icon: Radio, badge: liveStatus === 'CONNECTED' ? undefined : undefined },
-    { path: '/route-map', label: 'ROUTE MAP', detail: 'Nautical chart', icon: Anchor },
-    { path: '/custody', label: 'CHAIN OF CUSTODY', detail: 'Hash ledger', icon: Link2 },
-    { path: '/timeline', label: 'ATTACK TIMELINE', detail: 'Detection lag', icon: Clock },
-    { path: '/anomaly', label: 'UNKNOWN ANOMALY', detail: 'Novelty analysis', icon: Sparkles },
-    { path: '/metrics', label: 'EVAL METRICS', detail: 'Precision / recall', icon: BarChart3 },
-    { path: '/tamper-lab', label: 'TAMPER LAB', detail: 'Live demonstration', icon: FlaskConical },
+    { path: '/', label: 'Overview', detail: 'Command posture', icon: ShieldCheck },
+    { path: '/incidents', label: 'Incidents', detail: 'Case register', icon: AlertTriangle, badge: incidents.length || undefined },
+    { path: '/forensics', label: 'Record forensics', detail: 'Evidence & reconstruction', icon: FileSearch },
+    { path: '/live', label: 'Live watch', detail: 'Streaming feed', icon: Radio, badge: liveStatus === 'CONNECTED' ? undefined : undefined },
+    { path: '/route-map', label: 'Route map', detail: 'Nautical chart', icon: Anchor },
+    { path: '/custody', label: 'Chain of custody', detail: 'Hash ledger', icon: Link2 },
+    { path: '/timeline', label: 'Attack timeline', detail: 'Detection lag', icon: Clock },
+    { path: '/anomaly', label: 'Unknown anomaly', detail: 'Novelty analysis', icon: Sparkles },
+    { path: '/metrics', label: 'Evaluation metrics', detail: 'Precision / recall', icon: BarChart3 },
+    { path: '/tamper-lab', label: 'Tamper lab', detail: 'Live demonstration', icon: FlaskConical },
   ];
 
   const SCREEN_LABELS: Record<string, string> = {
@@ -457,13 +454,16 @@ type NavItem = {
 
 function NavItemComponent({ item, active, collapsed }: { item: NavItem; active: boolean; collapsed: boolean }) {
   const Icon = item.icon;
+  const navigate = useNavigate();
   return (
     <li role="listitem">
-      <Link
-        to={item.path}
+      <button
+        type="button"
+        onClick={() => navigate(item.path)}
         className={`nav-item${active ? ' active' : ''}`}
         aria-current={active ? 'page' : undefined}
         title={collapsed ? item.label : undefined}
+        style={{ border: 'none', background: 'none', textAlign: 'left', font: 'inherit', cursor: 'pointer' }}
       >
         <span className="nav-item-icon"><Icon size={16} strokeWidth={1.8} /></span>
         <span className="nav-item-text">
@@ -473,7 +473,7 @@ function NavItemComponent({ item, active, collapsed }: { item: NavItem; active: 
         {item.badge != null && item.badge > 0 && (
           <span className="nav-badge">{fmt.count(item.badge)}</span>
         )}
-      </Link>
+      </button>
     </li>
   );
 }
@@ -482,7 +482,7 @@ function NavItemComponent({ item, active, collapsed }: { item: NavItem; active: 
 
 function KpiStrip({
   overview,
-  incidents,
+  incidents: _incidents,
   liveStatus,
   liveEvents,
 }: {
@@ -555,7 +555,7 @@ function KpiCard({
         <span className="kpi-label">{label}</span>
         <span className="kpi-icon"><Icon size={16} /></span>
       </div>
-      <span className="kpi-value">{value}</span>
+      <strong className="kpi-value">{value}</strong>
       <span className="kpi-detail">{detail}</span>
       {tooltip && showTip && (
         <div className="tooltip-content" role="tooltip" style={{ bottom: 'calc(100% + 4px)', left: 0, right: 0, transform: 'none' }}>
@@ -580,7 +580,7 @@ function OverviewScreen({
   liveEvents: LiveEvent[];
 }) {
   const navigate = useNavigate();
-  const statusCounts = overview?.reconstruction_counts ?? {};
+  const statusCounts = (overview?.reconstruction_counts ?? {}) as Partial<Record<ReconstructionStatus, number>>;
   const topIncidents = [...incidents].sort((a, b) => b.risk_score - a.risk_score).slice(0, 8);
 
   // Attack type distribution
@@ -666,7 +666,7 @@ function OverviewScreen({
             <div className="panel-head">
               <div className="panel-title">
                 <span className="panel-icon"><AlertTriangle size={13} /></span>
-                <span className="panel-title-text">Incident Summary</span>
+                <span className="panel-title-text">Incident summary</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-sm)' }}>
                 <span className="panel-kicker">{fmt.count(incidents.length)} API-REPORTED CASES</span>
@@ -935,10 +935,11 @@ function ThreatGauge({ overview, incidents }: { overview: Overview | null; incid
 
 function PostureChip({ posture, large = false }: { posture: string; large?: boolean }) {
   const Icon = posture === 'critical' ? AlertTriangle : posture === 'guarded' ? Activity : ShieldCheck;
+  const label = posture === 'critical' ? 'CRITICAL EXPOSURE' : posture === 'guarded' ? 'ELEVATED REVIEW' : 'NO ACTIVE THREATS';
   return (
     <span className={`posture-chip ${posture}`} aria-label={`Threat posture: ${posture}`}>
       <Icon size={large ? 14 : 12} />
-      THREAT POSTURE <strong style={{ marginLeft: 4 }}>{posture.toUpperCase()}</strong>
+      <span>{large ? label : `THREAT POSTURE: ${posture.toUpperCase()}`}</span>
     </span>
   );
 }
@@ -1410,6 +1411,16 @@ function CaseEvidence({
                 No evidence-signature overlap; nearest category is a deterministic tie-break only.
               </p>
             )}
+            {unknown.invariant_violations && unknown.invariant_violations.length > 0 && (
+              <ul style={{ margin: '12px 0 0', paddingLeft: 18, color: 'var(--c-ivory-dim)', fontSize: 'var(--fs-body)' }}>
+                {unknown.invariant_violations.map((item) => (
+                  <li key={`${item.evidence_code}:${item.field}`} style={{ marginBottom: 4 }}>
+                    <strong style={{ color: 'var(--c-brass-light)' }}>{fmt.humanize(item.evidence_code)}</strong>
+                    <span style={{ marginLeft: 6, color: 'var(--c-ox-steel)' }}>{item.explanation}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       )}
@@ -1435,6 +1446,11 @@ function CaseEvidence({
               )}
             </div>
             <p style={{ margin: '0 0 var(--sp-md)', color: 'var(--c-ivory-muted)', fontSize: 'var(--fs-body)', lineHeight: 1.6 }}>{decision.explanation}</p>
+            {decision.provisional && (
+              <p className="unresolved-fields" style={{ color: 'var(--c-amber)', fontFamily: 'var(--font-mono)', fontSize: 12, margin: '6px 0 10px' }}>
+                PROVISIONAL — FIRST OBSERVED STREAM SNAPSHOT
+              </p>
+            )}
             {decision.changes.length > 0 ? (
               <div className="diff-list">
                 {decision.changes.map((change) => (
@@ -1501,7 +1517,7 @@ function CaseEvidence({
           <div className="panel-head">
             <div className="panel-title">
               <span className="panel-icon"><Clock size={13} /></span>
-              <span className="panel-title-text">Case Timeline</span>
+              <span className="panel-title-text">Case timeline</span>
             </div>
             <span className="panel-kicker">OBSERVED / DECIDED</span>
           </div>
@@ -1604,7 +1620,6 @@ function LiveScreen({ events, status }: { events: LiveEvent[]; status: string })
                           className="btn"
                           style={{ padding: '3px 8px', fontSize: 11 }}
                           onClick={() => navigate(`/forensics?record=${ev.record_id}`)}
-                          aria-label={`Inspect ${ev.record_id}`}
                         >
                           INSPECT <ArrowRight size={11} />
                         </button>
@@ -1860,7 +1875,7 @@ function ChainOfCustodyScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [jumpToBreak, setJumpToBreak] = useState(false);
-  const breakRef = useRef<HTMLDivElement>(null);
+  const breakRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
     API.json<ReconstructionDecision[]>('/api/reconstruction?limit=200')
